@@ -1,0 +1,3 @@
+<IDENTIFIER, foo, 3>
+<IDENTIFIER, bar, 4>
+<LEXICAL_ERR, unclosed multi-line comment, 5>
