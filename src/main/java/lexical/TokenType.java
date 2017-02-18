@@ -13,8 +13,9 @@ public enum TokenType {
     EQ, NEQ,
     GEQ, LEQ, GT, LT,
     ASSIGNMENT,
-    SEMICOLON, DOT,
+    SEMICOLON, DOT, COMMA,
     ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION,
+    // (, ), {, }, [, ]
     LCP, RCP, LBP, RBP, LSP, RSP,
     LEXICAL_ERR
 }

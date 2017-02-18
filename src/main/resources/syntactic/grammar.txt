@@ -1,0 +1,35 @@
+<prog> : <classDecl-List> <progBody>
+<classDecl-List> :  <classDecl-List> | <classDecl> | EPSILON
+<classDecl> : CLASS IDENTIFIER LBP <varDecl-List> <funcDef-List> RBP SEMICOLON
+<varDecl-List> :  <varDecl-List> | <varDecl> | EPSILON
+<funDecl-List> :  <funDecl-List> | <funDecl> | EPSILON
+<progBody> : PROGRAM <funcBody> SEMICOLON <funcDef-List>
+<funDef-List> :  <funDef-List> | <funDef> | EPSILON
+<funcHead> : <type> IDENTIFIER LCP <fParams> RCP
+<funcDef> : <funcHead><funcBody> SEMICOLON
+<funcBody> : LBP <varDecl-List> <statement-List> RBP
+<varDecl> : <type> IDENTIFIER <arraySize-List> SEMICOLON
+<statement> : <assignStat> SEMICOLON | IF LCP <expr> RCP THEN <statBlock> ELSE <statBlock> SEMICOLON | FOR LCP <type> IDENTIFIER <assignOp> <expr> SEMICOLON <relExpr> SEMICOLON <assignStat> RCP <statBlock> SEMICOLON | GET LCP <variable> RCP SEMICOLON | PUT LCP <expr> RCP SEMICOLON | RETURN LCP <expr> RCP SEMICOLON
+<statement-List> : <statement-List> | <statement> | EPSILON
+<assignStat> : <variable> <assignOp> <expr>
+<statBlock> : LBP <statement-List> RBP | <statement> | EPSILON
+<expr> : <arithExpr> | <relExpr>
+<relExpr> : <arithExpr> <relOp> <arithExpr>
+<arithExpr> : <arithExpr> <addOp> <term> | <term>
+<sign> : ADDITION | SUBTRACTION
+<term> : <term> <multOp> <factor> | <factor>
+<factor> : <variable> | <idnest>* IDENTIFIER LCP <aParams> RCP | INT_NUM | FLOAT_NUM | LCP <arithExpr> RCP | NOT <factor> | <sign> <factor>
+<variable> : <idnest-List> IDENTIFIER <indice-List>
+<idnest> : IDENTIFIER <indice-List> DOT
+<idnest-List>: <idnest-List> | <indest> | EPSILON
+<indice> : LSP <arithExpr> RSP
+<indice-List> : <indice-List> | <indice> | EPSILON
+<arraySize> : LSP INT_NUM RSP
+<arraySize-List> : <arraySize-List> | <arraySize> | EPSILON
+<type> : INT | FLOAT | IDENTIFIER
+<fParams> : <type> IDENTIFIER <arraySize-List> <fParamsTail-List> | EPSILON
+<aParams> : <expr> <aParamsTail-List> | EPSILON
+<fParamsTail> : COMMA <type> IDENTIFIER <arraySize-List>
+<fParamsTail-List> : <fParamsTail-List> | <fParamsTail> | EPSILON
+<aParamsTail> : COMMA <expr>
+<aParamsTail-List> : <aParamsTail-List> | <aParamsTail> | EPSILON
