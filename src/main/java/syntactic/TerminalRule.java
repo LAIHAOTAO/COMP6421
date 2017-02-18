@@ -17,7 +17,7 @@ public class TerminalRule extends GrammarRule{
     }
 
     @Override
-    public LinkedList<TerminalRule> getFirst() {
+    public LinkedList<TerminalRule> getFirstSet() {
         // the first set of a terminal is itself
         LinkedList<TerminalRule> first = new LinkedList<>();
         first.add(this);
@@ -25,7 +25,7 @@ public class TerminalRule extends GrammarRule{
     }
 
     @Override
-    public LinkedList<TerminalRule> getFollow() {
+    public LinkedList<TerminalRule> getFollowSet() {
         // terminals do not have follow set
         throw new RuntimeException("terminal symbol do not have any follow set");
     }

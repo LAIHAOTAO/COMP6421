@@ -31,9 +31,9 @@ public class ParserGenerator {
             this.nonTerminalMap.put(nt, new NonTerminalRule(nt));
         }
         TerminalRule dollarRule = new TerminalRule("$");
-//        this.terminalMap.put("$", dollarRule);
-//        NonTerminalRule startRule = nonTerminalMap.get(start);
-//        startRule.getFollow().add(dollarRule);
+        this.terminalMap.put("$", dollarRule);
+        NonTerminalRule startRule = nonTerminalMap.get(start);
+//        startRule.getFollowSet().add(dollarRule);
 //        this.parserTable = new ParserTable(startRule, dollarRule);
     }
 
@@ -95,15 +95,40 @@ public class ParserGenerator {
         }
     }
 
+    private void buildFirstSet() {
+        boolean wasChange = true;
+        while (wasChange) {
+            wasChange = false;
+            for (NonTerminalRule non : this.nonTerminalRules) {
+                wasChange = non.buildFirstSet(wasChange);
+            }
+        }
+    }
+
     public void preparationOne() {
         this.convertHashMapToLinkedList();
         this.removeLeftRecursion();
         this.removeLeftFactoring();
     }
 
+    public void preparationTwo() {
+        this.buildFirstSet();
+
+    }
+
     public void toDetailString() {
-        for (NonTerminalRule rule : nonTerminalRules) {
-            System.out.println(rule.toDetailString());
+        for (NonTerminalRule non : nonTerminalRules) {
+            System.out.println(non.toDetailString());
+        }
+    }
+
+    public void printFirstSet() {
+        for (NonTerminalRule non : nonTerminalRules) {
+            System.out.print(non.symbol + ": ");
+            for (TerminalRule t : non.getFirstSet()) {
+                System.out.print(t.toString() + " ");
+            }
+            System.out.println();
         }
     }
 }

@@ -11,12 +11,14 @@ public class ProductionRule {
     private LinkedList<GrammarRule> content;
     private LinkedList<TerminalRule> firstSet;
 
-    public ProductionRule(LinkedList<GrammarRule> content) {
-        this.content = content;
-    }
-
     public ProductionRule() {
         this.content = new LinkedList<>();
+        this.firstSet = new LinkedList<>();
+    }
+
+    public ProductionRule(LinkedList<GrammarRule> content) {
+        this.content = content;
+        this.firstSet = new LinkedList<>();
     }
 
     public void add(GrammarRule rule) {
@@ -101,8 +103,8 @@ public class ProductionRule {
         return sb.toString();
     }
 
-    private boolean unionFirstSet(boolean update, LinkedList<TerminalRule> target) {
-        for (TerminalRule t : target) {
+    public boolean unionFirstSet(boolean update, LinkedList<TerminalRule> anotherFirstSet) {
+        for (TerminalRule t : anotherFirstSet) {
             if (t != EpsilonRule.getEpsilonRule() && !this.firstSet.contains(t)) {
                 this.firstSet.addLast(t);
                 update = true;

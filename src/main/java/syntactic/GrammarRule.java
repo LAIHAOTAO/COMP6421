@@ -27,14 +27,14 @@ public abstract class GrammarRule {
      *
      * @return a linked list of the first set for the grammar rule.
      */
-    public abstract LinkedList<TerminalRule> getFirst();
+    public abstract LinkedList<TerminalRule> getFirstSet();
 
     /**
      * Gets the follow set.
      *
      * @return a linked list of the follow set for the grammar rule.
      */
-    public abstract LinkedList<TerminalRule> getFollow();
+    public abstract LinkedList<TerminalRule> getFollowSet();
 
     /**
      * Gets the string associated with the grammar rule.

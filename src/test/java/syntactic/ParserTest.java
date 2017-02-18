@@ -105,5 +105,9 @@ public class ParserTest {
         }
         generator.preparationOne();
         generator.toDetailString();
+        System.out.println("=========First Set=========");
+        // test first
+        generator.preparationTwo();
+        generator.printFirstSet();
     }
 }
