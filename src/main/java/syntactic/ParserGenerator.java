@@ -16,7 +16,7 @@ public class ParserGenerator {
     private LinkedList<NonTerminalRule> nonTerminalRules;
     private LinkedList<TerminalRule> terminalRules;
 
-    private ParserTable parserTable;
+    private ParserTable parseTable;
 
     public ParserGenerator(String[] terminals, String[] nonTerminals, String start) {
         this.terminalMap = new HashMap<>();
@@ -27,14 +27,13 @@ public class ParserGenerator {
             else
                 this.terminalMap.put(t, new TerminalRule(t));
         }
-        for (String nt : nonTerminals) {
+        for (String nt : nonTerminals)
             this.nonTerminalMap.put(nt, new NonTerminalRule(nt));
-        }
         TerminalRule dollarRule = new TerminalRule("$");
         this.terminalMap.put("$", dollarRule);
         NonTerminalRule startRule = nonTerminalMap.get(start);
-//        startRule.getFollowSet().add(dollarRule);
-//        this.parserTable = new ParserTable(startRule, dollarRule);
+        startRule.getFollowSet().add(dollarRule);
+        this.parseTable = new ParserTable(startRule, dollarRule);
     }
 
     public void addGrammarRule(String symbol, String[] productionRules) {
@@ -73,9 +72,8 @@ public class ParserGenerator {
         for (int i = 0; i < this.nonTerminalRules.size(); i++) {
             current = this.nonTerminalRules.get(i);
             newRule = current.removeLeftRecursion();
-            if (newRule != null) {
+            if (newRule != null)
                 this.nonTerminalRules.addLast(newRule);
-            }
         }
     }
 
@@ -86,12 +84,10 @@ public class ParserGenerator {
             current = this.nonTerminalRules.get(i);
             LinkedList<NonTerminalRule> resultList = new LinkedList<>();
             LinkedList<NonTerminalRule> tmp;
-            while ((tmp = current.removeLeftFactoring()) != null) {
+            while ((tmp = current.removeLeftFactoring()) != null)
                 resultList.addAll(tmp);
-            }
-            for (NonTerminalRule non : resultList) {
+            for (NonTerminalRule non : resultList)
                 this.nonTerminalRules.addLast(non);
-            }
         }
     }
 
@@ -99,8 +95,29 @@ public class ParserGenerator {
         boolean wasChange = true;
         while (wasChange) {
             wasChange = false;
-            for (NonTerminalRule non : this.nonTerminalRules) {
+            for (NonTerminalRule non : this.nonTerminalRules)
                 wasChange = non.buildFirstSet(wasChange);
+        }
+    }
+
+    private void buildFollowSet() {
+        boolean wasChanged = true;
+        while (wasChanged) {
+            wasChanged = false;
+            for (NonTerminalRule non : this.nonTerminalRules)
+                wasChanged = non.buildFollowSet(wasChanged);
+        }
+    }
+
+    private void buildParserTable() {
+        this.terminalRules.remove(EpsilonRule.getEpsilonRule());
+        for (NonTerminalRule non : this.nonTerminalRules) {
+            for (TerminalRule ter : this.terminalRules)
+                this.parseTable.put(non, ter, non.getProductionRuleForTerminal(ter));
+            if (non.getProductionRuleForTerminal(EpsilonRule.getEpsilonRule()) != null) {
+                LinkedList<TerminalRule> followList = non.getFollowSet();
+                for (TerminalRule followEntry : followList)
+                    this.parseTable.put(non, followEntry, EpsilonRule.getEpsilonList());
             }
         }
     }
@@ -113,7 +130,8 @@ public class ParserGenerator {
 
     public void preparationTwo() {
         this.buildFirstSet();
-
+        this.buildFollowSet();
+        this.buildParserTable();
     }
 
     public void toDetailString() {
@@ -130,5 +148,19 @@ public class ParserGenerator {
             }
             System.out.println();
         }
+    }
+
+    public void printFollowSet() {
+        for (NonTerminalRule non : nonTerminalRules) {
+            System.out.print(non.symbol + ": ");
+            for (TerminalRule t : non.getFollowSet()) {
+                System.out.print(t.toString() + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printTable() {
+        parseTable.printTable();
     }
 }

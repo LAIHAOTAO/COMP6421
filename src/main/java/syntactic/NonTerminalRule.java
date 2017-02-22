@@ -47,7 +47,7 @@ public class NonTerminalRule extends GrammarRule {
 
     @Override
     public LinkedList<TerminalRule> getFollowSet() {
-        return null;
+        return this.followSet;
     }
 
     @Override
@@ -163,10 +163,6 @@ public class NonTerminalRule extends GrammarRule {
             return newGrammarRules;
     }
 
-    // ============================================================================================
-    // =====================================PRIVATE METHOD=========================================
-    // ============================================================================================
-
     public boolean buildFirstSet(boolean wasChange) {
         boolean containEpsilon;
         for (ProductionRule pr : this.rules) {
@@ -181,12 +177,66 @@ public class NonTerminalRule extends GrammarRule {
                     break;
                 }
             }
-            // if this rule may produce epsilon
-            if (containEpsilon && (!pr.getFirstSet().contains(EpsilonRule.getEpsilonRule()))) {
+            // all grammar rules in current production rule contain epsilon, and current production
+            // rule's first set do not have epsilon yet
+            if (containEpsilon && !pr.getFirstSet().contains(EpsilonRule.getEpsilonRule())) {
                 pr.getFirstSet().addLast(EpsilonRule.getEpsilonRule());
             }
         }
         return wasChange;
+    }
+
+    public boolean buildFollowSet(boolean wasChange) {
+        int i, j, n;
+        GrammarRule grammarRule1, grammarRule2;
+        boolean containEpsilon;
+        for (ProductionRule pr : this.rules) {
+            n = pr.size();
+            for (i = 0; i < n; i++) {
+                grammarRule1 = pr.get(i);
+                if (!grammarRule1.isTerminal()) {
+                    containEpsilon = true;
+                    for (j = i + 1; j < n; j++) {
+                        grammarRule2 = pr.get(j);
+                        wasChange = unionFollowSet(
+                                wasChange,
+                                grammarRule1.getFollowSet(),
+                                grammarRule2.getFirstSet());
+                        containEpsilon =
+                                grammarRule2.getFirstSet().contains(EpsilonRule.getEpsilonRule());
+                        if (!containEpsilon) break;
+                    }
+                    if (containEpsilon)
+                        wasChange = this.unionFollowSet(wasChange,
+                                grammarRule1.getFollowSet(), this.getFollowSet());
+                }
+            }
+        }
+        return wasChange;
+    }
+
+    public LinkedList<GrammarRule> getProductionRuleForTerminal(TerminalRule terminal) {
+        for (ProductionRule pr : this.rules) {
+            if (pr.inFirstSet(terminal))
+                return pr.getContent();
+        }
+        return null;
+    }
+
+    // ============================================================================================
+    // =====================================PRIVATE METHOD=========================================
+    // ============================================================================================
+
+    private boolean unionFollowSet(boolean update,
+                                   LinkedList<TerminalRule> followSet,
+                                   LinkedList<TerminalRule> anotherSet) {
+        for (TerminalRule newFollow : anotherSet) {
+            if (!followSet.contains(newFollow) && (newFollow != EpsilonRule.getEpsilonRule())) {
+                followSet.addLast(newFollow);
+                update = true;
+            }
+        }
+        return update;
     }
 
     private int countSamePrefix(ProductionRule cRule, ProductionRule nRule) {

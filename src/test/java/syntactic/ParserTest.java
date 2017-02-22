@@ -105,9 +105,15 @@ public class ParserTest {
         }
         generator.preparationOne();
         generator.toDetailString();
+        generator.preparationTwo();
         System.out.println("=========First Set=========");
         // test first
-        generator.preparationTwo();
         generator.printFirstSet();
+        System.out.println("=========Follow Set=========");
+        // test follow
+        generator.printFollowSet();
+        // print the table
+        System.out.println("=========Parse Table=========");
+        generator.printTable();
     }
 }
