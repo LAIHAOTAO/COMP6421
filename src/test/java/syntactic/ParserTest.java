@@ -1,9 +1,11 @@
 package syntactic;
 
 import common.Const;
+import lexical.LexicalScanner;
+import lexical.Token;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -90,12 +92,12 @@ public class ParserTest {
 
     @Test
     public void testGenerator() throws IOException {
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_RES + "syntactic/testGrammar" +
-                ".txt");
+        GrammarFileReader reader =
+                new GrammarFileReader(Const.DIR_RES + "syntactic/grammar.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),
-                "<E>");
+                "prog");
         HashMap<String, String> map = reader.getMap();
         for (String key : map.keySet()) {
             String[] arr = map.get(key).split("\\|");
@@ -103,17 +105,33 @@ public class ParserTest {
                 generator.addGrammarRule(key, str.trim().split(" "));
             }
         }
-        generator.preparationOne();
+        generator.process();
         generator.toDetailString();
-        generator.preparationTwo();
+        System.out.println("===========================");
         System.out.println("=========First Set=========");
+        System.out.println("===========================");
+
         // test first
         generator.printFirstSet();
-        System.out.println("=========Follow Set=========");
+        System.out.println("===========================");
+        System.out.println("=========Follow Set========");
+        System.out.println("===========================");
+
         // test follow
         generator.printFollowSet();
         // print the table
-        System.out.println("=========Parse Table=========");
+        System.out.println("===========================");
+        System.out.println("=========Parse Table=======");
+        System.out.println("===========================");
+
         generator.printTable();
+        // parsing
+        System.out.println("===========================");
+        System.out.println("==========Parsing==========");
+        System.out.println("===========================");
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "syntactic/testInput.txt");
+
+        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
+        System.out.println(isSuccess);
     }
 }

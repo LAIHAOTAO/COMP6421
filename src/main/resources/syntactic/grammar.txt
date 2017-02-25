@@ -1,35 +1,47 @@
-<prog> : <classDecl-List> <progBody>
-<classDecl-List> :  <classDecl-List> | <classDecl> | EPSILON
-<classDecl> : CLASS IDENTIFIER LBP <varDecl-List> <funcDef-List> RBP SEMICOLON
-<varDecl-List> :  <varDecl-List> | <varDecl> | EPSILON
-<funDecl-List> :  <funDecl-List> | <funDecl> | EPSILON
-<progBody> : PROGRAM <funcBody> SEMICOLON <funcDef-List>
-<funDef-List> :  <funDef-List> | <funDef> | EPSILON
-<funcHead> : <type> IDENTIFIER LCP <fParams> RCP
-<funcDef> : <funcHead><funcBody> SEMICOLON
-<funcBody> : LBP <varDecl-List> <statement-List> RBP
-<varDecl> : <type> IDENTIFIER <arraySize-List> SEMICOLON
-<statement> : <assignStat> SEMICOLON | IF LCP <expr> RCP THEN <statBlock> ELSE <statBlock> SEMICOLON | FOR LCP <type> IDENTIFIER <assignOp> <expr> SEMICOLON <relExpr> SEMICOLON <assignStat> RCP <statBlock> SEMICOLON | GET LCP <variable> RCP SEMICOLON | PUT LCP <expr> RCP SEMICOLON | RETURN LCP <expr> RCP SEMICOLON
-<statement-List> : <statement-List> | <statement> | EPSILON
-<assignStat> : <variable> <assignOp> <expr>
-<statBlock> : LBP <statement-List> RBP | <statement> | EPSILON
-<expr> : <arithExpr> | <relExpr>
-<relExpr> : <arithExpr> <relOp> <arithExpr>
-<arithExpr> : <arithExpr> <addOp> <term> | <term>
-<sign> : ADDITION | SUBTRACTION
-<term> : <term> <multOp> <factor> | <factor>
-<factor> : <variable> | <idnest>* IDENTIFIER LCP <aParams> RCP | INT_NUM | FLOAT_NUM | LCP <arithExpr> RCP | NOT <factor> | <sign> <factor>
-<variable> : <idnest-List> IDENTIFIER <indice-List>
-<idnest> : IDENTIFIER <indice-List> DOT
-<idnest-List>: <idnest-List> | <indest> | EPSILON
-<indice> : LSP <arithExpr> RSP
-<indice-List> : <indice-List> | <indice> | EPSILON
-<arraySize> : LSP INT_NUM RSP
-<arraySize-List> : <arraySize-List> | <arraySize> | EPSILON
-<type> : INT | FLOAT | IDENTIFIER
-<fParams> : <type> IDENTIFIER <arraySize-List> <fParamsTail-List> | EPSILON
-<aParams> : <expr> <aParamsTail-List> | EPSILON
-<fParamsTail> : COMMA <type> IDENTIFIER <arraySize-List>
-<fParamsTail-List> : <fParamsTail-List> | <fParamsTail> | EPSILON
-<aParamsTail> : COMMA <expr>
-<aParamsTail-List> : <aParamsTail-List> | <aParamsTail> | EPSILON
+prog -> classDecl_list progBody
+classDecl_list -> classDecl classDecl_list | EPSILON
+classDecl -> CLASS ID LBP varDeclFunctDef_list RBP SEMICOLON
+progBody -> PROGRAM funcBody SEMICOLON funcDef_list
+funcDef -> type ID LCP fParams RCP funcBody SEMICOLON
+funcBody -> LBP funcBody_ RBP
+varDeclFunctDef_list -> type ID varDeclFunctDef_tail | EPSILON
+varDeclFunctDef_tail -> LCP fParams RCP funcBody SEMICOLON varDeclFunctDef_list | arraySize_list SEMICOLON varDeclFunctDef_list
+indiceIdnestList_tail -> DOT ID indiceIdnestList_tail | LSP arithExpr RSP indiceIdnestList_tail | EPSILON
+varDeclStatement_tail -> ID arraySize_list SEMICOLON funcBody_ | indiceIdnestList_tail assignOp expr SEMICOLON statement_list
+funcBody_ -> typeNumeric ID arraySize_list SEMICOLON funcBody_ | ID varDeclStatement_tail | restOfStatment statement_list | EPSILON
+statement -> assignmentStatment | restOfStatment
+assignmentStatment -> variable_ assignOp expr SEMICOLON
+restOfStatment -> FOR LCP type ID assignOp expr SEMICOLON relExpr SEMICOLON assignStat RCP statBlock SEMICOLON | IF LCP expr RCP THEN statBlock ELSE statBlock SEMICOLON | GET LCP variable_ RCP SEMICOLON | PUT LCP expr RCP SEMICOLON | RETURN LCP expr RCP SEMICOLON
+assignStat -> variable_ assignOp expr
+statBlock -> LBP statement_list RBP | statement | EPSILON
+expr -> arithExpr exp_
+exp_ -> relOp arithExpr | EPSILON
+relExpr -> arithExpr relOp arithExpr
+arithExpr -> term arithExpr_
+arithExpr_ -> addOp term arithExpr_ | EPSILON
+sign -> ADDITION | SUBTRACTION
+term -> factor term_
+term_ -> multOp factor term_ | EPSILON
+factor -> LCP arithExpr RCP | FLOAT_NUM | INT_NUM | NOT factor | variable_ factor_ | sign factor
+variable_ -> ID indice_list idnest_list_
+idnest_list_ -> idnest_ idnest_list_ | EPSILON
+idnest_ -> DOT ID indice_list
+factor_ -> LCP aParams RCP | EPSILON
+indice -> LSP arithExpr RSP
+arraySize -> LSP INT_NUM RSP
+type -> ID | typeNumeric
+typeNumeric -> FLOAT | INT
+fParams -> type ID arraySize_list fParamsTail_list | EPSILON
+aParams -> expr aParamsTail_list | EPSILON
+fParamsTail -> COMMA type ID arraySize_list
+aParamsTail -> COMMA expr
+funcDef_list -> funcDef funcDef_list | EPSILON
+statement_list -> statement statement_list | EPSILON
+arraySize_list -> arraySize arraySize_list | EPSILON
+indice_list -> indice indice_list | EPSILON
+fParamsTail_list -> fParamsTail fParamsTail_list | EPSILON
+aParamsTail_list -> aParamsTail aParamsTail_list | EPSILON
+assignOp -> ASSIGNMENT
+relOp -> LT | LEQ | NEQ | EQ | GT | GEQ
+addOp -> ADDITION | SUBTRACTION | OR
+multOp -> MULTIPLICATION | DIVISION | AND

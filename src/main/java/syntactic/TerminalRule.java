@@ -3,7 +3,9 @@ package syntactic;
 import java.util.LinkedList;
 
 /**
- * Created by ERIC_LAI on 2017-02-15.
+ * This class is used to describe the TerminalRule.
+ *
+ * @author Haotao Lai (haotao.lai@gmail.com) on 2017-02-15.
  */
 public class TerminalRule extends GrammarRule{
 

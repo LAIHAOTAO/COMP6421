@@ -4,7 +4,14 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
- * Created by ERIC_LAI on 2017-02-15.
+ * This class is the template of an NonTerminalRule. The NonTerminalRule is a two dimension
+ * linked list, the first dimension is the ProductionRule, inside the ProductionRule is the
+ * GrammarRule.
+ * All methods in this class can be understand easily, just as what the  method name say.
+ *
+ * @author Haotao Lai (haotao.lai@gmail.com) on 2017-02-15.
+ * @see ProductionRule
+ * @see GrammarRule
  */
 public class NonTerminalRule extends GrammarRule {
 

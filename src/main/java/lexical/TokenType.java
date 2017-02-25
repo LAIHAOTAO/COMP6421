@@ -8,7 +8,7 @@ public enum TokenType {
     IF, THEN, ELSE, FOR, CLASS, GET, PUT, RETURN, PROGRAM, INT, FLOAT,
     AND, OR, NOT,
     INT_NUM, FLOAT_NUM,
-    IDENTIFIER,
+    ID,
     COMMENT,
     EQ, NEQ,
     GEQ, LEQ, GT, LT,

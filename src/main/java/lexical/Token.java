@@ -19,6 +19,10 @@ public class Token {
         return type;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
 //        String type = "";

@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Created by ERIC_LAI on 2017-02-16.
+ * This class is used to describe the ProductionRule which is one of the dimension inside the
+ * NonTerminalRule.
+ *
+ * @author Haotao Lai (haotao.lai@gmail.com) on 2017-02-16.
  */
 public class ProductionRule {
 
@@ -98,9 +101,9 @@ public class ProductionRule {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (GrammarRule rule : this.content) {
-            sb.append(rule.symbol);
+            sb.append(rule.symbol).append(" ");
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public boolean unionFirstSet(boolean update, LinkedList<TerminalRule> anotherFirstSet) {

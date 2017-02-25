@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * Created by ERIC_LAI on 2017-02-17.
+ * Using a HashMap to describe the parse table. The key is the NonTerminal + Terminal, the value
+ * is the rule for this key.
+ *
+ * @author Haotao Lai (haotao.lai@gmail.com) on 2017-02-17.
  */
 public class ParserTable {
 

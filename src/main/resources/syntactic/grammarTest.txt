@@ -1,0 +1,35 @@
+program { } ;
+
+class id { }; program { } ;
+
+class id { }; program { } ; id id ( ) { } ;
+
+class id { }; program { } ; id id ( id id , id  id ) { id = id + id ; } ;
+
+class id { id id ;  }; program { } ; id id ( id id , id  id ) { } ;
+
+class id { id id ;  }; program { id id ; } ; id id ( id id , id  id ) { } ;
+
+class id { id id [ intValue ] ;  }; program { id id ; } ; id id ( id id , id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  }; program { id id ; } ; id id ( id id, id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  id id (id id , id id ){ id id ; }; }; program { id id ; } ; id id ( id id , id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  id id (id id , id id ){ id id ; }; }; program { id id ; } ; id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  id id (id id , id id ){ id id ; }; }; program { id id ; id = id ; } ; id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  id id (id id , id id ){ id id ; }; }; program { id id ; id = id ; id . id [ id ] [ id ] = id . id + id * id > id . id ; } ; id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;
+
+class id { id id [ intValue ][ intValue ] ;  id id (id id , id id ){ id id ; };  id id ; }; program { id id ; id = id ; id . id [ id ] [ id ] = id . id + id * id > id . id ; } ; id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;
+
+class id { } ; program { if ( id + id ) then { id = id + id ; } else { id = id + id - id > id + id ; } ; } ;
+
+class id { } ; program { id id ;  id = id + id ; id = id + id ; } ;
+
+class id { } ; program { id id ;  id = id ; id [ id ] = id . id [ id . id [ id ] ] . id ( id . id [ id ] )  ; } ;
+
+program { put ( id . id [ id . id [ id ] ] ) ; } ;
+
+program { get ( id ) ; } ;

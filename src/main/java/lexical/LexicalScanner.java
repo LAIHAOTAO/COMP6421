@@ -65,7 +65,7 @@ public class LexicalScanner {
                 String value = tmp.toUpperCase();
                 token = createToken(Enum.valueOf(TokenType.class, value), tmp, handlingLocation);
             } else {
-                token = createToken(TokenType.IDENTIFIER, tmp, handlingLocation);
+                token = createToken(TokenType.ID, tmp, handlingLocation);
             }
             if (Const.EOF != ch) backupChar();
         }
