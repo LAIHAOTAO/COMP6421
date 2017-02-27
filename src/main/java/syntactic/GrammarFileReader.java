@@ -63,7 +63,9 @@ public class GrammarFileReader {
     private void constructRules() throws IOException {
         String line;
         while ((line = br.readLine()) != null) {
-            parse(line);
+            if (!line.isEmpty()) {
+                parse(line);
+            }
         }
     }
 

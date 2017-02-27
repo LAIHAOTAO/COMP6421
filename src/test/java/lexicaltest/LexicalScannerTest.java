@@ -71,8 +71,8 @@ public class LexicalScannerTest {
     }
 
     private boolean compareTwoFiles(String src, String target, String fileNm) {
-        String errFile = Const.DIR_RES + "lexical/out/err" + "Lexical" + fileNm + "Err.txt";
-        String outFile = Const.DIR_RES + "lexical/out/token" + "Lexical" + fileNm + "Out.txt";
+        String errFile = Const.DIR_OUTPUT + "lexical/err" + "Lexical" + fileNm + "Err.txt";
+        String outFile = Const.DIR_OUTPUT + "lexical/token" + "Lexical" + fileNm + "Out.txt";
 
         BufferedReader br = null;
         BufferedWriter bwErr = null;

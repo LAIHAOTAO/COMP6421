@@ -23,6 +23,10 @@ public class Token {
         return value;
     }
 
+    public int getLocation() {
+        return location;
+    }
+
     @Override
     public String toString() {
 //        String type = "";

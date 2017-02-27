@@ -2,9 +2,11 @@ package syntactic;
 
 import common.Const;
 import lexical.LexicalScanner;
-import lexical.Token;
 import org.junit.Test;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,7 +17,7 @@ import java.util.LinkedList;
 public class ParserTest {
 
     @Test
-    public void testLeftRecursion() {
+    public void testRemoveLeftRecursion() {
         NonTerminalRule nonTerminal = new NonTerminalRule("A");
         LinkedList<GrammarRule> grammar1 = new LinkedList<>();
         grammar1.add(new NonTerminalRule("A"));
@@ -91,47 +93,78 @@ public class ParserTest {
     }
 
     @Test
-    public void testGenerator() throws IOException {
-        GrammarFileReader reader =
-                new GrammarFileReader(Const.DIR_RES + "syntactic/grammar.txt");
+    public void testDerivation() throws IOException {
+
+        Parser.turnOnDebug = true;
+
+        String startSymbol = "prog";
+
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/grammar.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),
-                "prog");
+                startSymbol
+        );
+
         HashMap<String, String> map = reader.getMap();
+
         for (String key : map.keySet()) {
             String[] arr = map.get(key).split("\\|");
             for (String str : arr) {
                 generator.addGrammarRule(key, str.trim().split(" "));
             }
         }
+
         generator.process();
-        generator.toDetailString();
-        System.out.println("===========================");
-        System.out.println("=========First Set=========");
-        System.out.println("===========================");
 
-        // test first
-        generator.printFirstSet();
-        System.out.println("===========================");
-        System.out.println("=========Follow Set========");
-        System.out.println("===========================");
-
-        // test follow
-        generator.printFollowSet();
-        // print the table
-        System.out.println("===========================");
-        System.out.println("=========Parse Table=======");
-        System.out.println("===========================");
-
-        generator.printTable();
-        // parsing
-        System.out.println("===========================");
-        System.out.println("==========Parsing==========");
-        System.out.println("===========================");
-        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "syntactic/testInput.txt");
-
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "syntactic/TestDerivation.txt");
         boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
         System.out.println(isSuccess);
     }
+
+    @Test
+    public void test() throws IOException {
+        Parser.turnOnDebug = true;
+        for (int i = 1; i <= 18; i++) {
+            testProgram(i);
+        }
+    }
+
+    public void testProgram(int i) throws IOException {
+
+        String startSymbol = "prog";
+
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/grammar.txt");
+        ParserGenerator generator = new ParserGenerator(
+                reader.getTerminalRuleSymbols(),
+                reader.getNonTerminalRuleSymbols(),
+                startSymbol
+        );
+
+        HashMap<String, String> map = reader.getMap();
+
+        for (String key : map.keySet()) {
+            String[] arr = map.get(key).split("\\|");
+            for (String str : arr) {
+                generator.addGrammarRule(key, str.trim().split(" "));
+            }
+        }
+
+        generator.process();
+
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES +
+                "syntactic/testprogram/program" + i + ".txt");
+        System.out.println("===============" + "parsing program" + i + "==================");
+        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
+        System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));
+    }
+
+    public void writeToFile(String fileName, String content) throws IOException {
+        String path = Const.DIR_OUTPUT + fileName + ".txt";
+        File file = new File(path);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        bw.write(content);
+        bw.close();
+    }
+
 }

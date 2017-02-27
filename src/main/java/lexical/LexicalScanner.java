@@ -5,6 +5,7 @@ import common.Const;
 import common.Language;
 import exception.NoSuchLexemeException;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -22,10 +23,18 @@ public class LexicalScanner {
     private int location;
     private ArrayList<String> keyWordsList;
     private int handlingLocation = 1;
+    private String fileNm;
 
     public LexicalScanner(String path) {
+        int s = path.lastIndexOf(File.separatorChar);
+        int l = path.lastIndexOf(".");
+        this.fileNm = path.substring(s, l);
         this.src = new SrcFileReader(path);
         keyWordsList = CommonMethod.getKeyWordsList(Language.KEYWORDS);
+    }
+
+    public String getFileNm() {
+        return fileNm;
     }
 
     public Token nextToken() {
@@ -215,6 +224,9 @@ public class LexicalScanner {
                     break;
                 case '.':
                     token = createToken(TokenType.DOT, ".", location);
+                    break;
+                case ',':
+                    token = createToken(TokenType.COMMA, ",", location);
                     break;
                 case Const.EOF:
                     break;

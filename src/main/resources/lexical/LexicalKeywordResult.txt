@@ -1,4 +1,4 @@
-<IDENTIFIER, andnot, 1>
+<ID, andnot, 1>
 <AND, and, 2>
 <NOT, not, 2>
 <OR, or, 2>
@@ -12,4 +12,4 @@
 <GET, get, 3>
 <PUT, put, 3>
 <RETURN, return, 3>
-<IDENTIFIER, ifabc, 4>
+<ID, ifabc, 4>

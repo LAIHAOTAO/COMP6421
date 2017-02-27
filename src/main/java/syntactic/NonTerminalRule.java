@@ -38,6 +38,10 @@ public class NonTerminalRule extends GrammarRule {
         this.primeNum = primeNum;
     }
 
+    public LinkedList<ProductionRule> getRules() {
+        return rules;
+    }
+
     @Override
     public boolean isTerminal() {
         return false;

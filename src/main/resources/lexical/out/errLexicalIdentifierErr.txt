@@ -1,2 +1,0 @@
-<LEXICAL_ERR, Unknown lexeme &, 2>
-<LEXICAL_ERR, Unknown lexeme _, 4>

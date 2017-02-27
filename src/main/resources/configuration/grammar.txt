@@ -1,5 +1,4 @@
 prog -> classDecl_list progBody
-classDecl_list -> classDecl classDecl_list | EPSILON
 classDecl -> CLASS ID LBP varDeclFunctDef_list RBP SEMICOLON
 progBody -> PROGRAM funcBody SEMICOLON funcDef_list
 funcDef -> type ID LCP fParams RCP funcBody SEMICOLON
@@ -35,12 +34,15 @@ fParams -> type ID arraySize_list fParamsTail_list | EPSILON
 aParams -> expr aParamsTail_list | EPSILON
 fParamsTail -> COMMA type ID arraySize_list
 aParamsTail -> COMMA expr
+
+classDecl_list -> classDecl classDecl_list | EPSILON
 funcDef_list -> funcDef funcDef_list | EPSILON
 statement_list -> statement statement_list | EPSILON
 arraySize_list -> arraySize arraySize_list | EPSILON
 indice_list -> indice indice_list | EPSILON
 fParamsTail_list -> fParamsTail fParamsTail_list | EPSILON
 aParamsTail_list -> aParamsTail aParamsTail_list | EPSILON
+
 assignOp -> ASSIGNMENT
 relOp -> LT | LEQ | NEQ | EQ | GT | GEQ
 addOp -> ADDITION | SUBTRACTION | OR

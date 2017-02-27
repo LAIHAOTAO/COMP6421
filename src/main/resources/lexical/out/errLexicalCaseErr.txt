@@ -1,8 +1,0 @@
-<LEXICAL_ERR, Unknown lexeme %, 17>
-<LEXICAL_ERR, Unknown lexeme $, 18>
-<LEXICAL_ERR, Unknown lexeme #, 19>
-<LEXICAL_ERR, Unknown lexeme @, 20>
-<LEXICAL_ERR, Unknown lexeme !, 21>
-<LEXICAL_ERR, Unknown lexeme &, 21>
-<LEXICAL_ERR, Unknown lexeme ~, 21>
-<LEXICAL_ERR, unclosed multi-line comment, 38>

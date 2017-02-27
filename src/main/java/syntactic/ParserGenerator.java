@@ -139,8 +139,9 @@ public class ParserGenerator {
         for (int i = 0; i < this.nonTerminalRules.size(); i++) {
             current = this.nonTerminalRules.get(i);
             newRule = current.removeLeftRecursion();
-            if (newRule != null)
+            if (newRule != null) {
                 this.nonTerminalRules.addLast(newRule);
+            }
         }
     }
 

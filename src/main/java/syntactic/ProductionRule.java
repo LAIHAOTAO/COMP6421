@@ -89,6 +89,10 @@ public class ProductionRule {
         return this.content.contains(rule);
     }
 
+    public void set(int i, GrammarRule gr) {
+        this.content.set(i, gr);
+    }
+
     public int size() {
         return this.content.size();
     }
