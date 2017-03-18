@@ -2,6 +2,7 @@ package syntactic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Using a HashMap to describe the parse table. The key is the NonTerminal + Terminal, the value
@@ -55,9 +56,18 @@ public class ParserTable {
         this.dollar = dollar;
     }
 
+    public Set<String> keySet() {
+        return this.entries.keySet();
+    }
+
     public void printTable() {
         for (String str : entries.keySet()) {
             System.out.println(str + " --> " + entries.get(str).toString());
         }
     }
+
+    public HashMap<String, LinkedList<GrammarRule>> getEntries() {
+        return entries;
+    }
+
 }

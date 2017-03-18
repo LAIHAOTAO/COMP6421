@@ -48,6 +48,9 @@ public class NonTerminalRule extends GrammarRule {
     }
 
     @Override
+    public boolean isAction() {return false;}
+
+    @Override
     public LinkedList<TerminalRule> getFirstSet() {
         LinkedList<TerminalRule> first = new LinkedList<>();
         for (ProductionRule pr : this.rules) {

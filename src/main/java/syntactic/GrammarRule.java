@@ -23,6 +23,13 @@ public abstract class GrammarRule {
     public abstract boolean isTerminal();
 
     /**
+     * Tells whether the grammar rule is action.
+     *
+     * @return - true if the grammar rule is terminal, false otherwise
+     */
+    public abstract boolean isAction();
+
+    /**
      * Gets the first set.
      *
      * @return a linked list of the first set for the grammar rule.

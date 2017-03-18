@@ -19,6 +19,11 @@ public class TerminalRule extends GrammarRule{
     }
 
     @Override
+    public boolean isAction() {
+        return false;
+    }
+
+    @Override
     public LinkedList<TerminalRule> getFirstSet() {
         // the first set of a terminal is itself
         LinkedList<TerminalRule> first = new LinkedList<>();

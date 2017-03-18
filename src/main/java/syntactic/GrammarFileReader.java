@@ -11,7 +11,6 @@ import java.util.*;
 /**
  * This class is used to read grammar from a file to get the Terminal and the NonTerminal symbols
  * The only thing you need to do is pass the path of the grammar file to the constructor.
- * The NonTerminal should be surrounded by "<" and ">", for example: <E> -> <T><E>'
  *
  * @author Haotao Lai (haotao.lai@gmail.com) on 2017-02-17
  */
@@ -20,6 +19,7 @@ public class GrammarFileReader {
     private BufferedReader br;
     private List<String> nonTerminalRuleSymbols;
     private List<String> terminalRuleSymbols;
+    private List<String> actionRuleSymbols;
     private HashMap<String, String> map;
     private HashSet<String> terminalSet;
 
@@ -29,6 +29,7 @@ public class GrammarFileReader {
         br = new BufferedReader(new FileReader(file));
         this.nonTerminalRuleSymbols = new ArrayList<>();
         this.terminalRuleSymbols = new ArrayList<>();
+        this.actionRuleSymbols = new ArrayList<>();
         this.map = new HashMap<>();
         terminalSet = new HashSet<>();
         Collections.addAll(terminalSet, Language.TERMINALS);
@@ -49,6 +50,15 @@ public class GrammarFileReader {
         String[] strings = new String[terminalRuleSymbols.size()];
         for (int i = 0; i < strings.length; i++) {
             strings[i] = terminalRuleSymbols.get(i);
+        }
+        return strings;
+    }
+
+    // get action symbol in a string array
+    public String[] getActionRuleSymbols() {
+        String[] strings = new String[actionRuleSymbols.size()];
+        for (int i= 0; i < strings.length; i++) {
+            strings[i] = actionRuleSymbols.get(i);
         }
         return strings;
     }
@@ -85,10 +95,13 @@ public class GrammarFileReader {
             if (!str.isEmpty()) {
                 String[] grammarRules = str.trim().split(" ");
                 for (String s : grammarRules) {
-                    if (!"EPSILON".equals(s) && !terminalSet.contains(s))
+                    if (!actionRuleSymbols.contains(s.trim()) && (s.contains("sym") || s.contains("sem"))) {
+                        actionRuleSymbols.add(s.trim());
+                    } else if (!"EPSILON".equals(s) && !terminalSet.contains(s)) {
                         nonTerminalRuleSymbols.add(s.trim());
-                    else if (!s.equals("|") && !terminalRuleSymbols.contains(s))
+                    } else if (!s.equals("|") && !terminalRuleSymbols.contains(s)) {
                         terminalRuleSymbols.add(s);
+                    }
                 }
             }
         }
