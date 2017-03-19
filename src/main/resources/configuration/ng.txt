@@ -1,44 +1,44 @@
 prog -> classDecl prog | progBody
-classDecl -> CLASS ID sym_CreateClassScope LBP classBody
-classBody -> type sym_StoreType ID sym_StoreId classBodyPrime | RBP SEMICOLON sym_EndScope
+classDecl -> CLASS ID LBP classBody
+classBody -> type ID classBodyPrime | RBP SEMICOLON 
 classBodyPrime -> classBodyVar | classBodyFunc
-classBodyVar -> varDeclArray sym_CreateVariable classBody
-classBodyFunc -> LCP sym_StartMemberFunction fParams RCP sym_CreateFunction funcBody SEMICOLON classBodyFuncPrime
-classBodyFuncPrime -> type sym_StoreType ID sym_StoreId classBodyFunc | RBP SEMICOLON sym_EndScope
-progBody -> PROGRAM sym_CreateProgram funcBody SEMICOLON funcDefs
-funcDefs -> type sym_StoreType ID sym_StoreId LCP sym_StartFunction fParams RCP sym_CreateFunction funcBody SEMICOLON funcDefs | EPSILON
+classBodyVar -> varDeclArray classBody
+classBodyFunc -> LCP fParams RCP funcBody SEMICOLON classBodyFuncPrime
+classBodyFuncPrime -> type ID classBodyFunc | RBP SEMICOLON 
+progBody -> PROGRAM funcBody SEMICOLON funcDefs
+funcDefs -> type ID LCP fParams RCP funcBody SEMICOLON funcDefs | EPSILON
 funcBody -> LBP funcBodyVar
-funcBodyVar -> INT sym_StoreType ID sym_StoreId varDeclArray sym_CreateVariable funcBodyVar | FLOAT sym_StoreType ID sym_StoreId varDeclArray sym_CreateVariable funcBodyVar | ID funcBodyVarPrime | controlStat funcBodyStmt | RBP sym_EndScope
-funcBodyVarPrime -> sym_StoreType ID sym_StoreId varDeclArray sym_CreateVariable funcBodyVar | sem_StartAssignmentStatment sem_PushVariableName indices variablePrime assignStat funcBodyStmt
-funcBodyStmt -> sem_StartAssignmentStatment variable assignStat funcBodyStmt | controlStat funcBodyStmt | RBP sym_EndScope
+funcBodyVar -> INT ID varDeclArray funcBodyVar | FLOAT ID varDeclArray funcBodyVar | ID funcBodyVarPrime | controlStat funcBodyStmt | RBP 
+funcBodyVarPrime -> ID varDeclArray funcBodyVar | indices variablePrime assignStat funcBodyStmt
+funcBodyStmt -> variable assignStat funcBodyStmt | controlStat funcBodyStmt | RBP
 varDeclArray -> arraySize varDeclArray | SEMICOLON
-controlStat -> IF sem_StartIfStatement LCP expr RCP THEN statBlock ELSE statBlock SEMICOLON | FOR sem_StartForStatement LCP type sym_StoreType sem_StartAssignmentStatment ID sym_StoreId sym_CreateVariable sem_PushVariableName sem_FinishVariable assignOp expr SEMICOLON relExpr SEMICOLON sem_StartAssignmentStatment variable assignExpr RCP statBlock SEMICOLON | GET sem_StartGetStatement LCP variable RCP SEMICOLON | PUT sem_StartPutStatement LCP expr RCP SEMICOLON | RETURN sem_StartReturnStatement LCP expr RCP SEMICOLON
+controlStat -> IF LCP expr RCP THEN statBlock ELSE statBlock SEMICOLON | FOR LCP type ID assignOp expr SEMICOLON relExpr SEMICOLON variable assignExpr RCP statBlock SEMICOLON | GET LCP variable RCP SEMICOLON | PUT LCP expr RCP SEMICOLON | RETURN LCP expr RCP SEMICOLON
 assignStat -> assignExpr SEMICOLON
 assignExpr -> assignOp expr
-statBlock -> LBP sem_StartBlock statBlockStmts | sem_StartBlock sem_StartAssignmentStatment variable assignStat sem_EndBlock | sem_StartBlock controlStat sem_EndBlock | EPSILON sem_StartBlock sem_EndBlock
-statBlockStmts -> sem_StartAssignmentStatment variable assignStat statBlockStmts | controlStat statBlockStmts | RBP sem_EndBlock
-expr -> sem_StartRelationExpression arithExpr exprPrime
-exprPrime -> relOp sem_PushRelationOperation sem_StartRelationExpression arithExpr exprPrime | EPSILON sem_EndRelationExpression
-relExpr -> sem_StartRelationExpression arithExpr relOp sem_PushRelationOperation arithExpr sem_EndRelationExpression
-arithExpr -> sem_StartAdditionExpression term arithExprPrime
-arithExprPrime -> addOp sem_PushAdditionOperation arithExpr | EPSILON sem_EndAdditionExpression
+statBlock -> LBP statBlockStmts | variable assignStat | controlStat | EPSILON 
+statBlockStmts -> variable assignStat statBlockStmts | controlStat statBlockStmts | RBP 
+expr -> arithExpr exprPrime
+exprPrime -> relOp arithExpr exprPrime | EPSILON 
+relExpr -> arithExpr relOp arithExpr 
+arithExpr -> term arithExprPrime
+arithExprPrime -> addOp arithExpr | EPSILON 
 sign -> ADDITION | SUBTRACTION
-term -> sem_StartMultiplicationExpression factor termPrime
-termPrime -> multOp sem_PushMultiplicationOperation sem_StartMultiplicationExpression factor termPrime | EPSILON sem_EndMultiplicationExpression
-factor -> factorIdNest | INT_NUM sem_PushIntLiteral | FLOAT_NUM sem_PushFloatLiteral | LCP arithExpr RCP | NOT factor  | sign factor
+term -> factor termPrime
+termPrime -> multOp factor termPrime | EPSILON 
+factor -> factorIdNest | INT_NUM | FLOAT_NUM | LCP arithExpr RCP | NOT factor | sign factor
 factorIdNest -> ID factorIdNestPrime
-factorIdNestPrime -> sem_PushVariableName indices factorIdNestPrimePrime | sem_StartFunctionCall LCP aParams RCP sem_EndFunctionCall
-factorIdNestPrimePrime -> DOT factorIdNest | EPSILON sem_FinishVariable
-variable -> ID sem_PushVariableName indices variablePrime
-variablePrime -> DOT variable | EPSILON sem_FinishVariable
+factorIdNestPrime -> indices factorIdNestPrimePrime | LCP aParams RCP 
+factorIdNestPrimePrime -> DOT factorIdNest | EPSILON 
+variable -> ID indices variablePrime
+variablePrime -> DOT variable | EPSILON 
 indices -> indice indices | EPSILON
 indice -> LSP arithExpr RSP
-arraySize -> LSP INT_NUM sym_StoreDimension RSP
+arraySize -> LSP INT_NUM RSP
 type -> INT | FLOAT | ID
-fParams -> type sym_StoreType ID sym_StoreId fParamsArraySz | EPSILON
-fParamsArraySz -> arraySize fParamsArraySz | sym_AddFunctionParameter fParamsTailStar
+fParams -> type ID fParamsArraySz | EPSILON
+fParamsArraySz -> arraySize fParamsArraySz | fParamsTailStar
 fParamsTailStar -> fParamsTail fParamsTailStar | EPSILON
-fParamsTail -> COMMA type sym_StoreType ID sym_StoreId arraySizeStar sym_AddFunctionParameter
+fParamsTail -> COMMA type ID arraySizeStar 
 arraySizeStar -> arraySize arraySizeStar | EPSILON
 aParams -> expr aParamsTailStar | EPSILON
 aParamsTailStar -> aParamsTail aParamsTailStar | EPSILON

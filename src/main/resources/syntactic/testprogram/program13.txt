@@ -1,0 +1,13 @@
+class id {
+    id id [ intValue ][ intValue ] ;
+    id id (id id , id id ){
+        id id ;
+    };
+    id id ;
+};
+program {
+    id id ;
+    id = id ;
+    id . id [ id ] [ id ] = id . id + id * id > id . id ;
+} ;
+id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;

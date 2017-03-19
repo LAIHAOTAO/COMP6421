@@ -1,0 +1,7 @@
+class id {
+    id id [ intValue ][ intValue ] ;
+};
+program {
+    id id ;
+} ;
+id id ( id id, id id ) { } ;

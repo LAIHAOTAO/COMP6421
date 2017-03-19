@@ -1,0 +1,8 @@
+class id { } ;
+program {
+    if ( id + id ) then {
+        id = id + id ;
+    } else {
+        id = id + id - id > id + id ;
+    } ;
+} ;

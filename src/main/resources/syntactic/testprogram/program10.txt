@@ -1,0 +1,10 @@
+class id {
+    id id [ 3 ][ 5 ] ;
+    id id (id id , id id ) {
+        id id ;
+    };
+};
+program {
+    id id ;
+} ;
+id id ( id id [ 6 ] [ 3 ] , id  id ) { } ;

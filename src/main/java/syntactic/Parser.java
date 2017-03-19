@@ -48,7 +48,8 @@ public class Parser {
             topRule = parsingStack.peek();
 
             if (topRule.isAction()) {
-                parsingStack.pop();
+                ActionRule actionRule = (ActionRule) parsingStack.pop();
+                actionRule.execute();
             }
             // if the top rule is not action, keep the procedure we did in syntactic
             else{
@@ -198,8 +199,8 @@ public class Parser {
 
     private static void printLinkedList(LinkedList<String> list) {
         System.out.print("=> ");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.print(list.get(i) + " ");
+        for (String aList : list) {
+            System.out.print(aList + " ");
         }
         System.out.println();
     }

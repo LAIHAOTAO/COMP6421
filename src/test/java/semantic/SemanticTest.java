@@ -1,164 +1,79 @@
-package syntactic;
+package semantic;
 
 import common.Const;
 import lexical.LexicalScanner;
 import org.junit.Test;
+import syntactic.*;
+import util.GrammarHelper;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import javax.management.remote.TargetedNotification;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Created by ERIC_LAI on 2017-02-15.
  */
-public class ParserTest {
+@SuppressWarnings("Duplicates")
+public class SemanticTest {
+
+
 
     @Test
-    public void testRemoveLeftRecursion() {
-        NonTerminalRule nonTerminal = new NonTerminalRule("A");
-        LinkedList<GrammarRule> grammar1 = new LinkedList<>();
-        grammar1.add(new NonTerminalRule("A"));
-        grammar1.add(new TerminalRule("a"));
-        LinkedList<GrammarRule> grammar2 = new LinkedList<>();
-        grammar2.add(new NonTerminalRule("A"));
-        grammar2.add(new TerminalRule("b"));
-        LinkedList<GrammarRule> grammar3 = new LinkedList<>();
-        grammar3.add(new NonTerminalRule("A"));
-        grammar3.add(new TerminalRule("e"));
-        LinkedList<GrammarRule> grammar4 = new LinkedList<>();
-        grammar4.add(new TerminalRule("f"));
-        ProductionRule production1 = new ProductionRule(grammar1);
-        ProductionRule production2 = new ProductionRule(grammar2);
-        ProductionRule production3 = new ProductionRule(grammar3);
-        ProductionRule production4 = new ProductionRule(grammar4);
-        LinkedList<ProductionRule> prs = new LinkedList<>();
-        prs.add(production1);
-        prs.add(production2);
-        prs.add(production3);
-        prs.add(production4);
-        nonTerminal.setRules(prs);
-        System.out.println("======before remove left recursion======");
-        System.out.println(nonTerminal.toDetailString());
-        NonTerminalRule newNonterminalRule = nonTerminal.removeLeftRecursion();
-        System.out.println("======after remove left recursion======");
-        System.out.println(nonTerminal.toDetailString());
-        System.out.println(newNonterminalRule.toDetailString());
-    }
-
-    @Test
-    public void testRemoveLeftFactoring() {
-        NonTerminalRule nonTerminal = new NonTerminalRule("C");
-        LinkedList<GrammarRule> grammar1 = new LinkedList<>();
-        grammar1.add(new NonTerminalRule("A"));
-        grammar1.add(new NonTerminalRule("B"));
-        grammar1.add(new NonTerminalRule("C"));
-        grammar1.add(new TerminalRule("a"));
-        LinkedList<GrammarRule> grammar2 = new LinkedList<>();
-        grammar2.add(new NonTerminalRule("A"));
-        grammar2.add(new NonTerminalRule("B"));
-        grammar2.add(new TerminalRule("b"));
-        LinkedList<GrammarRule> grammar3 = new LinkedList<>();
-        grammar3.add(new NonTerminalRule("A"));
-        grammar3.add(new NonTerminalRule("B"));
-        grammar3.add(new NonTerminalRule("C"));
-        grammar3.add(new TerminalRule("e"));
-        LinkedList<GrammarRule> grammar4 = new LinkedList<>();
-        grammar4.add(new NonTerminalRule("Z"));
-        grammar4.add(new TerminalRule("e"));
-        ProductionRule production1 = new ProductionRule(grammar1);
-        ProductionRule production2 = new ProductionRule(grammar2);
-        ProductionRule production3 = new ProductionRule(grammar3);
-        ProductionRule production4 = new ProductionRule(grammar4);
-        LinkedList<ProductionRule> prs = new LinkedList<>();
-        prs.add(production1);
-        prs.add(production2);
-        prs.add(production3);
-        prs.add(production4);
-        nonTerminal.setRules(prs);
-        System.out.println("======before left factoring======");
-        System.out.println(nonTerminal.toDetailString());
-        System.out.println("======after left factoring=======");
-        LinkedList<NonTerminalRule> resultList = new LinkedList<>();
-        LinkedList<NonTerminalRule> tmp;
-        while ((tmp = nonTerminal.removeLeftFactoring()) != null) {
-            resultList.addAll(tmp);
-        }
-        System.out.println(nonTerminal.toDetailString());
-        for (NonTerminalRule non : resultList) {
-            System.out.println(non.toDetailString());
-        }
-    }
-
-    @Test
-    public void testDerivation() throws IOException {
-
-        Parser.turnOnDebug = true;
+    public void testProgram() throws IOException {
 
         String startSymbol = "prog";
 
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/grammar.txt");
-        ParserGenerator generator = new ParserGenerator(
-                reader.getTerminalRuleSymbols(),
-                reader.getNonTerminalRuleSymbols(),
+        // pure grammar
+
+        GrammarFileReader pureGrammarReader = new GrammarFileReader(Const.DIR_CONFIG + "/ng.txt");
+        ParserGenerator pureGenerator = new ParserGenerator(
+                pureGrammarReader.getTerminalRuleSymbols(),
+                pureGrammarReader.getNonTerminalRuleSymbols(),
                 startSymbol
         );
 
-        HashMap<String, String> map = reader.getMap();
+        HashMap<String, String> pureMap = pureGrammarReader.getMap();
 
-        for (String key : map.keySet()) {
-            String[] arr = map.get(key).split("\\|");
-            for (String str : arr) {
-                generator.addGrammarRule(key, str.trim().split(" "));
+        for (String key : pureMap.keySet()) {
+            String[] productionRuleStrs = pureMap.get(key).split("\\|");
+            for (String productionRuleStr : productionRuleStrs) {
+                String[] grammarRuleStrs = productionRuleStr.trim().split(" ");
+                pureGenerator.addGrammarRule(key, grammarRuleStrs);
             }
         }
 
-        generator.process();
+        pureGenerator.processPureGrammar();
 
-        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "syntactic/TestDerivation.txt");
-        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
-        System.out.println(isSuccess);
-    }
+        GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/action-grammar.txt");
+        ParserGenerator pg = new ParserGenerator(
+                ar.getTerminalRuleSymbols(),
+                ar.getNonTerminalRuleSymbols(),
+                ar.getActionRuleSymbols(),
+                startSymbol
+        );
+        HashMap<String, String> map = ar.getMap();
+        for (String key : map.keySet()) {
+            String[] productionRuleStrs = map.get(key).split("\\|");
+            for (String productionRuleStr : productionRuleStrs) {
+                String[] grammarRuleStrs = productionRuleStr.trim().split(" ");
+                pg.addGrammarRule(key, grammarRuleStrs);
+            }
+        }
 
-    @Test
-    public void test() throws IOException {
+        // update the grammar
+        GrammarHelper.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
+        // end of update grammar
+
+        System.out.println("============================================================");
+
+        pureGenerator.printTable();
+
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/TestParsingProcess.txt");
         Parser.turnOnDebug = true;
-        for (int i = 1; i <= 18; i++) {
-            testProgram(i);
-        }
-
-    }
-
-    public void testProgram(int i) throws IOException {
-
-        String startSymbol = "prog";
-
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/grammar.txt");
-        ParserGenerator generator = new ParserGenerator(
-                reader.getTerminalRuleSymbols(),
-                reader.getNonTerminalRuleSymbols(),
-                startSymbol
-        );
-
-        HashMap<String, String> map = reader.getMap();
-
-        for (String key : map.keySet()) {
-            String[] arr = map.get(key).split("\\|");
-            for (String str : arr) {
-                generator.addGrammarRule(key, str.trim().split(" "));
-            }
-        }
-
-        generator.process();
-
-        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES +
-                "syntactic/testprogram/program" + i + ".txt");
-        System.out.println("===============" + "parsing program" + i + "==================");
-        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
+        boolean isSuccess = Parser.parse(scanner, pureGenerator.getParseTable());
         System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));
-        System.out.println("parsing result file has been created");
     }
 
 

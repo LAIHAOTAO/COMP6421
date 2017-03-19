@@ -11,6 +11,10 @@ public class ActionRule extends GrammarRule {
         this.symbol = sym;
     }
 
+    public void execute() {
+
+    }
+
     @Override
     public boolean isTerminal() {
         return false;
@@ -35,4 +39,5 @@ public class ActionRule extends GrammarRule {
     public String toString() {
         return this.symbol;
     }
+
 }
