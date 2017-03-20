@@ -54,4 +54,9 @@ public class SymbolTable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getParentName() {
+        if (parent == null) return "null";
+        return parent.getName();
+    }
 }

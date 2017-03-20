@@ -1,5 +1,6 @@
 package util;
 
+import common.Language;
 import syntactic.*;
 
 import java.util.*;
@@ -106,11 +107,14 @@ public class GrammarHelper {
     }
 
     private static List<String> getNeedReplaceKey(Set<String> tableKeySet, String mapKey) {
+
         List<String> list = new ArrayList<>();
 
         for (String tableKey : tableKeySet) {
-            if (tableKey.contains(mapKey)) {
-                list.add(tableKey);
+            for (String ter : Language.TERMINALS) {
+                if (tableKey.equals(mapKey + ter)) {
+                    list.add(tableKey);
+                }
             }
         }
 

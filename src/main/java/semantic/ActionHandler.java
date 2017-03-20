@@ -9,7 +9,6 @@ public class ActionHandler {
 
     public static Stack<SymbolTable> context = new Stack<>();
 
-
     protected static SymbolTable getCurrentSymbolTable() {
         if (!context.isEmpty()) {
             return context.peek();

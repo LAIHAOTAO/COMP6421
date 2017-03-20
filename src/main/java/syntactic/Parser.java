@@ -6,17 +6,14 @@ import lexical.Token;
 import semantic.ActionHandler;
 import semantic.SymbolTable;
 import semantic.SymbolTableActionHandler;
-import semantic.SymbolTableEntry;
-import util.SymbolTablePrinter;
+import util.SymbolTableHelper;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Stack;
 
 /**
  * Created by ERIC_LAI on 2017-02-15.
@@ -58,7 +55,11 @@ public class Parser {
 
             if (topRule.isAction()) {
                 ActionRule actionRule = (ActionRule) parsingStack.pop();
-                actionRule.execute(prevToken);
+                actionRule.execute(prevToken, scanner);
+                if (SymbolTableActionHandler.hasError) {
+                    inputToken = SymbolTableActionHandler.updateToken;
+                    SymbolTableActionHandler.hasError = false;
+                }
             }
             // if the top rule is not action, keep the procedure we did in syntactic
             else {
@@ -144,14 +145,22 @@ public class Parser {
         }
         outputError(scanner.getFileNm(), errorCollector.toString());
 
-        // print out the symbol table
-        SymbolTablePrinter.print();
+        if (SymbolTableActionHandler.symActionErrorCollector.isEmpty()) {
+            SymbolTableHelper.print();
+        } else {
+            System.out.println(SymbolTableActionHandler.symActionErrorCollector.size());
+            for (String str : SymbolTableActionHandler.symActionErrorCollector) {
+                System.err.println(str);
+            }
+            SymbolTableHelper.print();
+
+        }
 
         return isSuccess;
     }
 
     private static void skipError(GrammarRule rule, LinkedList<GrammarRule> stack,
-                                  LexicalScanner scanner, StringBuilder sb ) {
+                                  LexicalScanner scanner, StringBuilder sb) {
         sb.append("syntax error at line: ").append(inputToken.getLocation()).append(", around " +
                 "token: ").append(inputToken.getValue()).append('\n');
         if (rule.isTerminal()) {

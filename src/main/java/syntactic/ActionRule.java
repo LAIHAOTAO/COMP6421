@@ -1,5 +1,6 @@
 package syntactic;
 
+import lexical.LexicalScanner;
 import lexical.Token;
 import semantic.SymbolTableActionHandler;
 
@@ -14,9 +15,9 @@ public class ActionRule extends GrammarRule {
         this.symbol = sym;
     }
 
-    public void execute(Token prevToken) {
+    public void execute(Token prevToken, LexicalScanner scanner) {
         if (this.symbol.contains("sym_")) {
-            SymbolTableActionHandler.process(this.symbol, prevToken);
+            SymbolTableActionHandler.process(this.symbol, prevToken, scanner);
         }
         else {
 

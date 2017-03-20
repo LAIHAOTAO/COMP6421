@@ -1,6 +1,7 @@
 package semantic;
 
 
+import lexical.LexicalScanner;
 import lexical.Token;
 import lexical.TokenType;
 
@@ -13,16 +14,21 @@ import java.util.List;
  */
 public class SymbolTableActionHandler extends ActionHandler {
 
+    private static LexicalScanner scanner;
+    public static Token updateToken;
+    public static boolean hasError = false;
+
     private static Token cacheTypeToken;
     private static Token cacheIdToken;
     private static Token cacheDimension;
     private static String cacheFunction;
     private static ArrayList<String> cacheParamNameList = new ArrayList<>();
     public static List<SymbolTable> symbolTableList = new ArrayList<>();
+    public static List<String> symActionErrorCollector = new ArrayList<>();
 
+    public static void process(String action, Token prevToken, LexicalScanner s) {
 
-    public static void process(String action, Token prevToken) {
-
+        scanner = s;
         SymbolTable table = getCurrentSymbolTable();
 
         switch (action) {
@@ -36,7 +42,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 createFunction(table);
                 break;
             case "sym_CreateVariable":
-                createVariable(table, prevToken);
+                createVariable(table);
                 break;
             case "sym_StartFunction":
                 startFunction(table);
@@ -55,7 +61,6 @@ public class SymbolTableActionHandler extends ActionHandler {
                 break;
             case "sym_StoreDimension":
                 cacheDimension = prevToken;
-                System.out.println("something wrong here sym store dimension ...");
                 break;
             case "sym_EndScope":
                 // pop out the top symbol table of the context stack
@@ -88,6 +93,9 @@ public class SymbolTableActionHandler extends ActionHandler {
                 SymbolTableEntry.Type type = paramTypeList.get(i);
                 SymbolTableEntry.Kind kind = SymbolTableEntry.Kind.Parameter;
                 SymbolTableEntry paramEntry = new SymbolTableEntry(name, kind, type, null);
+                if (entry.getParamDimensionList().size() != 0) {
+                    paramEntry.setDimension(entry.getParamDimensionList().get(i));
+                }
                 functionTable.insert(cacheParamNameList.get(i), paramEntry);
             }
         }
@@ -100,7 +108,17 @@ public class SymbolTableActionHandler extends ActionHandler {
 
     private static void addFunctionParameter(SymbolTable currentTable) {
         SymbolTableEntry entry = currentTable.search(cacheFunction);
-        entry.addParameterType(getType(cacheTypeToken));
+        SymbolTableEntry.Type type = getType(cacheTypeToken);
+
+        // check this variable is an array or not
+        if (cacheDimension != null) {
+            entry.addParamDimensionList(Integer.parseInt(cacheDimension.getValue()));
+            type = changeTypeToArray(type);
+            // reset the cache
+            cacheDimension = null;
+        }
+        entry.addParameterType(type);
+
         // cache the parameter name
         cacheParamNameList.add(cacheIdToken.getValue());
     }
@@ -119,21 +137,36 @@ public class SymbolTableActionHandler extends ActionHandler {
             cacheFunction = cacheIdToken.getValue();
 
         } else {
-            throw new RuntimeException("Duplicate function declaration of function name " + cacheIdToken.getValue());
+            symActionErrorCollector.add("Duplicate function declaration of function name " + cacheIdToken.getValue());
+            skipScope();
         }
     }
 
-    private static void createVariable(SymbolTable currentTable, Token prevToken) {
+    private static void createVariable(SymbolTable currentTable) {
         if (!currentTable.exist(cacheIdToken.getValue())) {
+
+            SymbolTableEntry.Type type = getType(cacheTypeToken);
+
             SymbolTableEntry entry = new SymbolTableEntry(
                     cacheIdToken.getValue(),
                     SymbolTableEntry.Kind.Variable,
-                    getType(cacheTypeToken),
+                    null,
                     null
             );
+
+            // check this variable is an array or not
+            if (cacheDimension != null) {
+                entry.setDimension(Integer.parseInt(cacheDimension.getValue()));
+                type = changeTypeToArray(type);
+                // reset the cache
+                cacheDimension = null;
+            }
+            entry.setType(type);
+
             currentTable.insert(cacheIdToken.getValue(), entry);
         } else {
-            throw new RuntimeException("Duplicate variable declaration of variable name " + cacheIdToken.getValue());
+            symActionErrorCollector.add("Duplicate variable declaration of variable name " + cacheIdToken.getValue());
+            skipScope();
         }
     }
 
@@ -154,8 +187,9 @@ public class SymbolTableActionHandler extends ActionHandler {
             context.push(classScope);
         } else {
             // duplicate declaration
-            throw new RuntimeException("Duplicate class declaration of class name " + prevToken.getValue()
+            symActionErrorCollector.add("Duplicate class declaration of class name " + prevToken.getValue()
                     + " around line: " + prevToken.getLocation());
+            skipScope();
         }
     }
 
@@ -176,8 +210,21 @@ public class SymbolTableActionHandler extends ActionHandler {
             context.push(programScope);
         } else {
             // duplicate declaration
-            throw new RuntimeException("Duplicate program declaration around line: " + prevToken.getLocation());
+            symActionErrorCollector.add("Duplicate program declaration around line: " + prevToken.getLocation());
+            skipScope();
         }
+    }
+
+    private static SymbolTableEntry.Type changeTypeToArray(SymbolTableEntry.Type type) {
+        switch (type) {
+            case Int:
+                return SymbolTableEntry.Type.IntArray;
+            case Float:
+                return SymbolTableEntry.Type.FloatArray;
+            case Class:
+                return SymbolTableEntry.Type.ClassArray;
+        }
+        return null;
     }
 
     private static SymbolTableEntry.Type getType(Token cacheType) {
@@ -191,6 +238,20 @@ public class SymbolTableActionHandler extends ActionHandler {
                 return SymbolTableEntry.Type.Class;
         }
         return null;
+    }
+
+    // this method will be called only duplicate declaration appeared, the goal of this method is to skip the
+    // duplicate scope and keep parsing the remain program
+    private static void skipScope() {
+        if (scanner != null) {
+            Token tok = scanner.nextToken();
+            while (tok.getType() != TokenType.RBP) {
+                tok = scanner.nextToken();
+            }
+            scanner.nextToken();
+            hasError = true;
+            updateToken = scanner.nextToken();
+        }
     }
 
 }

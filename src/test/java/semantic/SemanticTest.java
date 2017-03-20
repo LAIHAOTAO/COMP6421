@@ -6,11 +6,8 @@ import org.junit.Test;
 import syntactic.*;
 import util.GrammarHelper;
 
-import javax.management.remote.TargetedNotification;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Created by ERIC_LAI on 2017-02-15.
@@ -45,6 +42,9 @@ public class SemanticTest {
         }
 
         pureGenerator.processPureGrammar();
+
+//        pureGenerator.printTable();
+
 
         GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/action-grammar.txt");
         ParserGenerator pg = new ParserGenerator(
