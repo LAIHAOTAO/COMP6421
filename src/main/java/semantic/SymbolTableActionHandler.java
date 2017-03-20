@@ -1,9 +1,9 @@
 package semantic;
 
 
-import lexical.LexicalScanner;
 import lexical.Token;
 import lexical.TokenType;
+import util.DuplicateHelper;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,10 +14,6 @@ import java.util.List;
  */
 public class SymbolTableActionHandler extends ActionHandler {
 
-    private static LexicalScanner scanner;
-    public static Token updateToken;
-    public static boolean hasError = false;
-
     private static Token cacheTypeToken;
     private static Token cacheIdToken;
     private static Token cacheDimension;
@@ -26,9 +22,8 @@ public class SymbolTableActionHandler extends ActionHandler {
     public static List<SymbolTable> symbolTableList = new ArrayList<>();
     public static List<String> symActionErrorCollector = new ArrayList<>();
 
-    public static void process(String action, Token prevToken, LexicalScanner s) {
+    public static void process(String action, Token prevToken) {
 
-        scanner = s;
         SymbolTable table = getCurrentSymbolTable();
 
         switch (action) {
@@ -124,95 +119,102 @@ public class SymbolTableActionHandler extends ActionHandler {
     }
 
     private static void startFunction(SymbolTable currentTable) {
-        if (!currentTable.exist(cacheIdToken.getValue())) {
-            SymbolTableEntry entry = new SymbolTableEntry(
-                    cacheIdToken.getValue(),
-                    SymbolTableEntry.Kind.Function,
-                    getType(cacheTypeToken),
-                    null
-            );
-            currentTable.insert(cacheIdToken.getValue(), entry);
+        String name = cacheIdToken.getValue();
 
-            // cache the function name for adding parameter
-            cacheFunction = cacheIdToken.getValue();
-
-        } else {
-            symActionErrorCollector.add("Duplicate function declaration of function name " + cacheIdToken.getValue());
-            skipScope();
+        if (currentTable.exist(name)) {
+            // duplicate declaration
+            symActionErrorCollector.add("Duplicate function declaration of function name " + name
+                    + " around line: " + cacheIdToken.getLocation());
+            name = DuplicateHelper.getNewName(currentTable, name);
         }
+        SymbolTableEntry entry = new SymbolTableEntry(
+                name,
+                SymbolTableEntry.Kind.Function,
+                getType(cacheTypeToken),
+                null
+        );
+        currentTable.insert(name, entry);
+
+        // cache the function name for adding parameter
+        cacheFunction = name;
     }
 
     private static void createVariable(SymbolTable currentTable) {
-        if (!currentTable.exist(cacheIdToken.getValue())) {
-
-            SymbolTableEntry.Type type = getType(cacheTypeToken);
-
-            SymbolTableEntry entry = new SymbolTableEntry(
-                    cacheIdToken.getValue(),
-                    SymbolTableEntry.Kind.Variable,
-                    null,
-                    null
-            );
-
-            // check this variable is an array or not
-            if (cacheDimension != null) {
-                entry.setDimension(Integer.parseInt(cacheDimension.getValue()));
-                type = changeTypeToArray(type);
-                // reset the cache
-                cacheDimension = null;
-            }
-            entry.setType(type);
-
-            currentTable.insert(cacheIdToken.getValue(), entry);
-        } else {
-            symActionErrorCollector.add("Duplicate variable declaration of variable name " + cacheIdToken.getValue());
-            skipScope();
+        String name = cacheIdToken.getValue();
+        if (currentTable.exist(name)) {
+            symActionErrorCollector.add("Duplicate variable declaration of variable name " + name
+                    + " around line: " + cacheIdToken.getLocation());
+            name = DuplicateHelper.getNewName(currentTable, name);
         }
+
+        SymbolTableEntry.Type type = getType(cacheTypeToken);
+
+        SymbolTableEntry entry = new SymbolTableEntry(
+                name,
+                SymbolTableEntry.Kind.Variable,
+                null,
+                null
+        );
+
+        // check this variable is an array or not
+        if (cacheDimension != null) {
+            entry.setDimension(Integer.parseInt(cacheDimension.getValue()));
+            type = changeTypeToArray(type);
+            // reset the cache
+            cacheDimension = null;
+        }
+        entry.setType(type);
+
+        currentTable.insert(name, entry);
     }
 
     private static void createClassScope(SymbolTable currentTable, Token prevToken) {
 
-        if (!currentTable.exist(prevToken.getValue())) {
+        String name = prevToken.getValue();
 
-            SymbolTable classScope = new SymbolTable(currentTable);
-            classScope.setName(prevToken.getValue() + " table");
-            SymbolTableEntry entry = new SymbolTableEntry(
-                    prevToken.getValue(),
-                    SymbolTableEntry.Kind.Class,
-                    SymbolTableEntry.Type.Null,
-                    classScope
-            );
-
-            currentTable.insert(prevToken.getValue(), entry);
-            context.push(classScope);
-        } else {
+        if (currentTable.exist(name)) {
             // duplicate declaration
-            symActionErrorCollector.add("Duplicate class declaration of class name " + prevToken.getValue()
+            symActionErrorCollector.add("Duplicate class declaration of class name " + name
                     + " around line: " + prevToken.getLocation());
-            skipScope();
+            name = DuplicateHelper.getNewName(currentTable, name);
         }
+        SymbolTable classScope = new SymbolTable(currentTable);
+        classScope.setName(name + " table");
+        SymbolTableEntry entry = new SymbolTableEntry(
+                name,
+                SymbolTableEntry.Kind.Class,
+                SymbolTableEntry.Type.Null,
+                classScope
+        );
+
+        currentTable.insert(name, entry);
+        context.push(classScope);
+
+
     }
 
     private static void createProgram(SymbolTable currentTable, Token prevToken) {
 
-        if (!currentTable.exist("program")) {
+        String name = prevToken.getValue();
 
-            SymbolTable programScope = new SymbolTable(currentTable);
-            programScope.setName("program table");
-            SymbolTableEntry entry = new SymbolTableEntry(
-                    "program",
-                    SymbolTableEntry.Kind.Function,
-                    SymbolTableEntry.Type.Null,
-                    programScope
-            );
-
-            currentTable.insert("program", entry);
-            context.push(programScope);
-        } else {
+        if (currentTable.exist(name)) {
             // duplicate declaration
             symActionErrorCollector.add("Duplicate program declaration around line: " + prevToken.getLocation());
-            skipScope();
+            name = DuplicateHelper.getNewName(currentTable, name);
         }
+
+        SymbolTable programScope = new SymbolTable(currentTable);
+        programScope.setName(name + " table");
+        SymbolTableEntry entry = new SymbolTableEntry(
+                name,
+                SymbolTableEntry.Kind.Function,
+                SymbolTableEntry.Type.Null,
+                programScope
+        );
+
+        currentTable.insert(name, entry);
+        context.push(programScope);
+
     }
 
     private static SymbolTableEntry.Type changeTypeToArray(SymbolTableEntry.Type type) {
@@ -238,20 +240,6 @@ public class SymbolTableActionHandler extends ActionHandler {
                 return SymbolTableEntry.Type.Class;
         }
         return null;
-    }
-
-    // this method will be called only duplicate declaration appeared, the goal of this method is to skip the
-    // duplicate scope and keep parsing the remain program
-    private static void skipScope() {
-        if (scanner != null) {
-            Token tok = scanner.nextToken();
-            while (tok.getType() != TokenType.RBP) {
-                tok = scanner.nextToken();
-            }
-            scanner.nextToken();
-            hasError = true;
-            updateToken = scanner.nextToken();
-        }
     }
 
 }

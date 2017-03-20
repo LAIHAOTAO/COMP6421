@@ -55,11 +55,7 @@ public class Parser {
 
             if (topRule.isAction()) {
                 ActionRule actionRule = (ActionRule) parsingStack.pop();
-                actionRule.execute(prevToken, scanner);
-                if (SymbolTableActionHandler.hasError) {
-                    inputToken = SymbolTableActionHandler.updateToken;
-                    SymbolTableActionHandler.hasError = false;
-                }
+                actionRule.execute(prevToken);
             }
             // if the top rule is not action, keep the procedure we did in syntactic
             else {
@@ -148,11 +144,10 @@ public class Parser {
         if (SymbolTableActionHandler.symActionErrorCollector.isEmpty()) {
             SymbolTableHelper.print();
         } else {
-            System.out.println(SymbolTableActionHandler.symActionErrorCollector.size());
             for (String str : SymbolTableActionHandler.symActionErrorCollector) {
                 System.err.println(str);
             }
-            SymbolTableHelper.print();
+//            SymbolTableHelper.print();
 
         }
 

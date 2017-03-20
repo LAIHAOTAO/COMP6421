@@ -59,4 +59,8 @@ public class SymbolTable {
         if (parent == null) return "null";
         return parent.getName();
     }
+
+    public Set<String> keySet() {
+        return this.entries.keySet();
+    }
 }

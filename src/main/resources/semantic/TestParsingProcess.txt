@@ -3,12 +3,13 @@ class MyClass {
     int addNum() {
         int x;
     };
-    int addNum() {
-        int x;
-    };
 };
 
-class MyClass1 {
+class MyClass {
+    MyClass myClass1[6];
+};
+
+class MyClass {
     MyClass myClass1[6];
 };
 
@@ -22,7 +23,6 @@ program {
 
 };
 
-
 int ff() {
 
     int xx;
@@ -35,6 +35,7 @@ int x(MyClass p, float m) {
 
 int x(MyClass p, float m) {
     MyClass myClass1;
+    int yy;
     int yy;
 };
 
