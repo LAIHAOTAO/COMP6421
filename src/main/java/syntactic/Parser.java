@@ -3,12 +3,18 @@ package syntactic;
 import common.Const;
 import lexical.LexicalScanner;
 import lexical.Token;
+import semantic.ActionHandler;
+import semantic.SymbolTable;
+import semantic.SymbolTableActionHandler;
+import semantic.SymbolTableEntry;
+import util.SymbolTablePrinter;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -17,10 +23,9 @@ import java.util.Stack;
  */
 public class Parser {
 
-
     public static boolean turnOnDebug = false;
     private static Token inputToken;
-
+    private static Token prevToken;
 
     public static boolean parse(LexicalScanner scanner, ParserTable table) throws IOException {
 
@@ -33,13 +38,17 @@ public class Parser {
 
         LinkedList<GrammarRule> parsingStack = new LinkedList<>();
         GrammarRule topRule;
-
         boolean isSuccess = true;
 
         parsingStack.push(table.getDollar());
         parsingStack.push(table.getStart());
         inputToken = scanner.nextToken();
 
+        // create global symbol table and add the the context stack
+        SymbolTable globalTable = new SymbolTable(null);
+        globalTable.setName("global table");
+        SymbolTableActionHandler.symbolTableList.add(globalTable);
+        ActionHandler.context.push(globalTable);
 
         // if the stack is not empty or the input is not empty, just keep parsing
         while (!parsingStack.isEmpty() && inputToken != null) {
@@ -49,10 +58,10 @@ public class Parser {
 
             if (topRule.isAction()) {
                 ActionRule actionRule = (ActionRule) parsingStack.pop();
-                actionRule.execute();
+                actionRule.execute(prevToken);
             }
             // if the top rule is not action, keep the procedure we did in syntactic
-            else{
+            else {
                 // if top rule is a terminal symbol
                 if (topRule.isTerminal()) {
                     // if the input token match to the top rule symbol (successfully parse), pop it from the stack and
@@ -64,7 +73,7 @@ public class Parser {
                             derivation.set(inputToken.getValue());
                             derivation.increaseIdx();
                         }
-
+                        prevToken = inputToken;
                         inputToken = scanner.nextToken();
                     }
                     // if the top rule cannot match the grammar, throw an error
@@ -134,6 +143,10 @@ public class Parser {
             derivation.close();
         }
         outputError(scanner.getFileNm(), errorCollector.toString());
+
+        // print out the symbol table
+        SymbolTablePrinter.print();
+
         return isSuccess;
     }
 

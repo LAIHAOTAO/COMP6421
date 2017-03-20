@@ -12,26 +12,47 @@ public class GrammarHelper {
 
 
     public static void addSemanticActionInGrammar(ParserGenerator generator, HashMap<String, NonTerminalRule> map) {
+
+        // clean the map, remove useless entry
+        {
+            List<String> removeList = new ArrayList<>();
+            for (String key : map.keySet()) {
+                if (key.contains("sem_") || key.contains("sym_")) {
+                    removeList.add(key);
+                }
+            }
+            for (String key : removeList) {
+                map.remove(key);
+            }
+        }
+
+//        System.out.println("All NonTerminal rule, total " + map.size());
+//        for (String key : map.keySet()) {
+//            System.out.println(map.get(key).toDetailString());
+//        }
+
+        // get parse table key set
         ParserTable table = generator.getParseTable();
         HashMap<String, LinkedList<GrammarRule>> entries = table.getEntries();
         Set<String> tableKeySet = generator.getParseTable().keySet();
 
         for (String mapKey : map.keySet()) {
+            // get the list of lefthand side contains the rule need to be replace
             List<String> needReplace = getNeedReplaceKey(tableKeySet, mapKey);
 
             if (!needReplace.isEmpty()) {
-
+                // loop all key in the replace list
                 for (String needReplaceKey : needReplace) {
 
-                    // get table the right side rule with the current key
+                    // get table the righthand side rule with the current key
                     LinkedList<GrammarRule> tableRuleRightSide = entries.get(needReplaceKey);
 
-                    // get the non-terminal
+                    // get the new data from the map which uses to replace the old data
                     NonTerminalRule non = map.get(mapKey);
                     LinkedList<ProductionRule> pdrs = non.getRules();
 
-                    // I really don't know what happen here but it is a bug exist for now just
-                    // manually cast "sym_" and "sem_" to ActionGrammar
+                    // I really don't know what happen here but there is a bug for now I have to
+                    // manually cast all rules whose symbol contain "sym_" and "sem_" to ActionGrammar
                     for (ProductionRule p : pdrs) {
                         LinkedList<GrammarRule> gs = p.getContent();
                         for (int i = 0; i < gs.size(); i++) {
@@ -42,9 +63,21 @@ public class GrammarHelper {
                         }
                     }
 
+                    // debug
+//                    for (ProductionRule p : pdrs) {
+//                        LinkedList<GrammarRule> gs = p.getContent();
+//                        System.out.println(gs);
+//                    }
+                    // end of debug
+
                     // use pdrs to replace the rule in tableRuleRightSide, according to their first rule
                     for (ProductionRule pd : pdrs) {
                         if (match(tableRuleRightSide, pd)) {
+
+//                            System.out.println("match rule (old rule): " + tableRuleRightSide);
+//                            System.out.println("match rule (new rule): " + pd.getContent());
+//                            System.out.println();
+
                             tableRuleRightSide = pd.getContent();
                             entries.put(needReplaceKey, tableRuleRightSide);
                             break;
@@ -57,25 +90,26 @@ public class GrammarHelper {
     }
 
     private static boolean match(LinkedList<GrammarRule> gr, ProductionRule pdrs) {
-        int i = 0, j = 0, counter = 0;
-        int len = (gr.size() < pdrs.size())? gr.size() : pdrs.size();
-        while (j < len) {
-            if (Objects.equals(gr.get(i).getSymbol(), pdrs.get(j).getSymbol())) {
-                i++;
-                j++;
+        int grPtr = 0, pdPtr = 0, counter = 0;
+
+        while (grPtr < gr.size() && pdPtr < pdrs.size()) {
+            if (Objects.equals(gr.get(grPtr).getSymbol(), pdrs.get(pdPtr).getSymbol())) {
+                grPtr++;
+                pdPtr++;
                 counter++;
             } else {
-                j++;
+                pdPtr++;
             }
         }
+
         return counter == gr.size();
     }
 
-    private static List<String> getNeedReplaceKey(Set<String> tableKeySet, String key) {
+    private static List<String> getNeedReplaceKey(Set<String> tableKeySet, String mapKey) {
         List<String> list = new ArrayList<>();
 
         for (String tableKey : tableKeySet) {
-            if (tableKey.contains(key)) {
+            if (tableKey.contains(mapKey)) {
                 list.add(tableKey);
             }
         }

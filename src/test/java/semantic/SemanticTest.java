@@ -66,9 +66,9 @@ public class SemanticTest {
         GrammarHelper.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
-        System.out.println("============================================================");
+//        System.out.println("============================================================");
 
-        pureGenerator.printTable();
+//        pureGenerator.printTable();
 
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/TestParsingProcess.txt");
         Parser.turnOnDebug = true;

@@ -1,5 +1,8 @@
 package syntactic;
 
+import lexical.Token;
+import semantic.SymbolTableActionHandler;
+
 import java.util.LinkedList;
 
 /**
@@ -11,8 +14,13 @@ public class ActionRule extends GrammarRule {
         this.symbol = sym;
     }
 
-    public void execute() {
+    public void execute(Token prevToken) {
+        if (this.symbol.contains("sym_")) {
+            SymbolTableActionHandler.process(this.symbol, prevToken);
+        }
+        else {
 
+        }
     }
 
     @Override

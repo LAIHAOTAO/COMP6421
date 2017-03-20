@@ -1,8 +1,27 @@
+class MyClass {
+    int x;
+    int addNum() {
+        int x;
+    };
+};
+
 program {
-       int x;
-       int y;
-       int z;
-       x = 1;
-       y = 2;
-       z = x + y;
+    int x;
+    int y;
+    int z;
+    x = 1;
+    y = 2;
+    z = x + y;
+};
+
+int ff() {
+    int xx;
+};
+
+int x(MyClass p, float m) {
+    int yy;
+};
+
+int y(MyClass p, float m) {
+    int yy;
 };
