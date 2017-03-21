@@ -1,6 +1,5 @@
 package lexical;
 
-import common.CommonMethod;
 import common.Const;
 import common.Language;
 import exception.NoSuchLexemeException;
@@ -8,6 +7,7 @@ import exception.NoSuchLexemeException;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Queue;
     
 /**
@@ -30,7 +30,7 @@ public class LexicalScanner {
         int l = path.lastIndexOf(".");
         this.fileNm = path.substring(s, l);
         this.src = new SrcFileReader(path);
-        keyWordsList = CommonMethod.getKeyWordsList(Language.KEYWORDS);
+        keyWordsList = getKeyWordsList(Language.KEYWORDS);
     }
 
     public String getFileNm() {
@@ -70,7 +70,7 @@ public class LexicalScanner {
             }
             // check whether is keyword or not
             String tmp = tokenBuilder.toString();
-            if (CommonMethod.isKeyWord(tmp, keyWordsList)) {
+            if (isKeyWord(tmp, keyWordsList)) {
                 String value = tmp.toUpperCase();
                 token = createToken(Enum.valueOf(TokenType.class, value), tmp, handlingLocation);
             } else {
@@ -294,5 +294,18 @@ public class LexicalScanner {
         while (!queue.isEmpty()) {
             queue.remove();
         }
+    }
+
+    public static ArrayList<String> getKeyWordsList(String[] keywords) {
+        ArrayList<String> list = new ArrayList<String>();
+        Collections.addAll(list, keywords);
+        return list;
+    }
+
+    public static boolean isKeyWord(String word, ArrayList<String> kw) {
+        for (String str : kw) {
+            if (str.equals(word)) return true;
+        }
+        return false;
     }
 }

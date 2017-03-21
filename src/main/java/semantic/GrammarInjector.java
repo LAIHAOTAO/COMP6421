@@ -1,4 +1,4 @@
-package util;
+package semantic;
 
 import common.Language;
 import syntactic.*;
@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by ERIC_LAI on 2017-03-18.
  */
-public class GrammarHelper {
+public class GrammarInjector {
 
 
     public static void addSemanticActionInGrammar(ParserGenerator generator, HashMap<String, NonTerminalRule> map) {

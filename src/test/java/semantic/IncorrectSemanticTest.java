@@ -4,7 +4,6 @@ import common.Const;
 import lexical.LexicalScanner;
 import org.junit.Test;
 import syntactic.*;
-import util.GrammarHelper;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.HashMap;
  * Created by ERIC_LAI on 2017-02-15.
  */
 @SuppressWarnings("Duplicates")
-public class SemanticTest {
+public class IncorrectSemanticTest {
 
 
 
@@ -23,8 +22,7 @@ public class SemanticTest {
         String startSymbol = "prog";
 
         // pure grammar
-
-        GrammarFileReader pureGrammarReader = new GrammarFileReader(Const.DIR_CONFIG + "/ng.txt");
+        GrammarFileReader pureGrammarReader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
         ParserGenerator pureGenerator = new ParserGenerator(
                 pureGrammarReader.getTerminalRuleSymbols(),
                 pureGrammarReader.getNonTerminalRuleSymbols(),
@@ -43,10 +41,8 @@ public class SemanticTest {
 
         pureGenerator.processPureGrammar();
 
-//        pureGenerator.printTable();
-
-
-        GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/action-grammar.txt");
+        // action grammar
+        GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/ActionGrammar.txt");
         ParserGenerator pg = new ParserGenerator(
                 ar.getTerminalRuleSymbols(),
                 ar.getNonTerminalRuleSymbols(),
@@ -63,14 +59,10 @@ public class SemanticTest {
         }
 
         // update the grammar
-        GrammarHelper.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
+        GrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
-//        System.out.println("============================================================");
-
-//        pureGenerator.printTable();
-
-        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/TestParsingProcess.txt");
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/IncorrectProgram.txt");
         Parser.turnOnDebug = true;
         boolean isSuccess = Parser.parse(scanner, pureGenerator.getParseTable());
         System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));

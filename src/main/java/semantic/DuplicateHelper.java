@@ -1,4 +1,4 @@
-package util;
+package semantic;
 
 import semantic.SymbolTable;
 

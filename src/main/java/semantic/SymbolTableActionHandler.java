@@ -3,7 +3,6 @@ package semantic;
 
 import lexical.Token;
 import lexical.TokenType;
-import util.DuplicateHelper;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -20,7 +19,7 @@ public class SymbolTableActionHandler extends ActionHandler {
     private static String cacheFunction;
     private static ArrayList<String> cacheParamNameList = new ArrayList<>();
     public static List<SymbolTable> symbolTableList = new ArrayList<>();
-    public static List<String> symActionErrorCollector = new ArrayList<>();
+    public static StringBuilder symActionErrorCollector = new StringBuilder();
 
     public static void process(String action, Token prevToken) {
 
@@ -68,6 +67,18 @@ public class SymbolTableActionHandler extends ActionHandler {
             default:
                 throw new RuntimeException("No such symbol table action");
         }
+    }
+
+    public static SymbolTable getGlobalTable() {
+        if (!symbolTableList.isEmpty()) {
+            for (SymbolTable table : symbolTableList) {
+                if ("global table".equals(table.getName())) {
+                    return table;
+                }
+            }
+        }
+        System.err.println("The global table do not exit !!!");
+        return null;
     }
 
     private static void startMemberFunction(SymbolTable currentTable) {
@@ -123,9 +134,11 @@ public class SymbolTableActionHandler extends ActionHandler {
 
         if (currentTable.exist(name)) {
             // duplicate declaration
-            symActionErrorCollector.add("Duplicate function declaration of function name " + name
-                    + " around line: " + cacheIdToken.getLocation());
+            symActionErrorCollector.append("Duplicate function declaration of function name ")
+                    .append(name).append(" around line: ")
+                    .append(cacheIdToken.getLocation()).append("\n");
             name = DuplicateHelper.getNewName(currentTable, name);
+            isSuccess = false;
         }
         SymbolTableEntry entry = new SymbolTableEntry(
                 name,
@@ -142,11 +155,13 @@ public class SymbolTableActionHandler extends ActionHandler {
     private static void createVariable(SymbolTable currentTable) {
         String name = cacheIdToken.getValue();
         if (currentTable.exist(name)) {
-            symActionErrorCollector.add("Duplicate variable declaration of variable name " + name
-                    + " around line: " + cacheIdToken.getLocation());
+            symActionErrorCollector.append("Duplicate variable declaration of variable name ")
+                    .append(name)
+                    .append(" around line: ")
+                    .append(cacheIdToken.getLocation()).append("\n");
             name = DuplicateHelper.getNewName(currentTable, name);
+            isSuccess = false;
         }
-
         SymbolTableEntry.Type type = getType(cacheTypeToken);
 
         SymbolTableEntry entry = new SymbolTableEntry(
@@ -169,15 +184,17 @@ public class SymbolTableActionHandler extends ActionHandler {
     }
 
     private static void createClassScope(SymbolTable currentTable, Token prevToken) {
-
         String name = prevToken.getValue();
-
         if (currentTable.exist(name)) {
             // duplicate declaration
-            symActionErrorCollector.add("Duplicate class declaration of class name " + name
-                    + " around line: " + prevToken.getLocation());
+            symActionErrorCollector.append("Duplicate class declaration of class name ")
+                    .append(name)
+                    .append(" around line: ")
+                    .append(prevToken.getLocation()).append("\n");
             name = DuplicateHelper.getNewName(currentTable, name);
+            isSuccess = false;
         }
+
         SymbolTable classScope = new SymbolTable(currentTable);
         classScope.setName(name + " table");
         SymbolTableEntry entry = new SymbolTableEntry(
@@ -195,12 +212,11 @@ public class SymbolTableActionHandler extends ActionHandler {
 
     private static void createProgram(SymbolTable currentTable, Token prevToken) {
 
-        String name = prevToken.getValue();
+        String name = "program";
 
         if (currentTable.exist(name)) {
-            // duplicate declaration
-            symActionErrorCollector.add("Duplicate program declaration around line: " + prevToken.getLocation());
-            name = DuplicateHelper.getNewName(currentTable, name);
+            // nothing to do since the grammar do not allow two program, it will be issued
+            // as a syntax error, just keep the structure for extract method later
         }
 
         SymbolTable programScope = new SymbolTable(currentTable);

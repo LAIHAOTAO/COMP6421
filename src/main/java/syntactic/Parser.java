@@ -6,11 +6,9 @@ import lexical.Token;
 import semantic.ActionHandler;
 import semantic.SymbolTable;
 import semantic.SymbolTableActionHandler;
+import util.ErrorFileGenerator;
 import util.SymbolTableHelper;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -27,11 +25,14 @@ public class Parser {
     public static boolean parse(LexicalScanner scanner, ParserTable table) throws IOException {
 
         DerivationBuilder derivation = null;
-        StringBuilder errorCollector = new StringBuilder();
+        StringBuilder syntacticErrorCollector = new StringBuilder();
+        StringBuilder semanticErrorCollector = SymbolTableActionHandler.symActionErrorCollector;
 
+        // ******************************************************************************* //
         if (turnOnDebug) {
             derivation = new DerivationBuilder(scanner.getFileNm());
         }
+        // ******************************************************************************* //
 
         LinkedList<GrammarRule> parsingStack = new LinkedList<>();
         GrammarRule topRule;
@@ -66,30 +67,30 @@ public class Parser {
                     if (Objects.equals(topRule.getSymbol(), inputToken.getType().toString())) {
                         parsingStack.pop();
 
+                        // ******************************************************************************* //
                         if (derivation != null) {
                             derivation.set(inputToken.getValue());
                             derivation.increaseIdx();
                         }
+                        // ******************************************************************************* //
+
                         prevToken = inputToken;
                         inputToken = scanner.nextToken();
                     }
                     // if the top rule cannot match the grammar, throw an error
                     else if (!topRule.equals(EpsilonRule.getEpsilonRule())) {
-//                    throw new RuntimeException("\n Parse error at input token " +
-//                            inputToken.getValue() + " does not match with stack token " +
-//                            topRule.getSymbol() + ".\n " + currentStackString(stack));
-                        skipError(topRule, parsingStack, scanner, errorCollector);
+                        skipError(topRule, parsingStack, scanner, syntacticErrorCollector);
                         isSuccess = false;
-
                     }
                     // if top rule is epsilon, just pop the top element in the stack
                     else {
                         parsingStack.pop();
 
+                        // ******************************************************************************* //
                         if (derivation != null) {
                             derivation.remove();
                         }
-
+                        // ******************************************************************************* //
                     }
                 }
                 // if the top rule is a non-terminal symbol
@@ -100,11 +101,7 @@ public class Parser {
 
                     // if the rule you get from the table is null, throw a exception
                     if (expandedRule == null) {
-//                    throw new RuntimeException("\n Parse error, " +
-//                            "A parse table entry for " + inputToken.getValue() +
-//                            " does not exist for grammar rule " + topRule.getSymbol() + ".\n " +
-//                            currentStackString(stack));
-                        skipError(topRule, parsingStack, scanner, errorCollector);
+                        skipError(topRule, parsingStack, scanner, syntacticErrorCollector);
                         isSuccess = false;
                         continue;
                     }
@@ -117,10 +114,12 @@ public class Parser {
                         expandedSymbols.add(gr.getSymbol());
                     }
 
+                    // ******************************************************************************* //
                     if (derivation != null) {
                         if (!derivation.isEmpty()) derivation.remove();
                         derivation.addAll(expandedSymbols);
                     }
+                    // ******************************************************************************* //
 
                     // do what refer in to ppt as "inverseRHSMultiplePush"
                     for (int i = expandedRule.size() - 1; i >= 0; i--) {
@@ -129,35 +128,37 @@ public class Parser {
 
                 }
 
+                // ******************************************************************************* //
                 if (turnOnDebug && derivation != null) {
                     derivation.outputDerivation();
                 }
-
+                // ******************************************************************************* //
             }
         }
 
+        // output syntactic error to file
+        ErrorFileGenerator.outputError(scanner.getFileNm(), syntacticErrorCollector.toString(), Const.ErrorLevel.Syntactic);
+        ErrorFileGenerator.outputError(scanner.getFileNm(), semanticErrorCollector.toString(), Const.ErrorLevel.Semantic);
+
+        // ******************************************************************************* //
         if (turnOnDebug && derivation != null) {
             derivation.close();
         }
-        outputError(scanner.getFileNm(), errorCollector.toString());
-
-        if (SymbolTableActionHandler.symActionErrorCollector.isEmpty()) {
+        if (semanticErrorCollector.toString().isEmpty()) {
             SymbolTableHelper.print();
+            SymbolTableHelper.outputToFile(scanner.getFileNm());
         } else {
-            for (String str : SymbolTableActionHandler.symActionErrorCollector) {
-                System.err.println(str);
-            }
-//            SymbolTableHelper.print();
-
+            System.err.println(semanticErrorCollector.toString());
         }
+        // ******************************************************************************* //
 
-        return isSuccess;
+        return isSuccess && ActionHandler.isSuccess;
     }
 
     private static void skipError(GrammarRule rule, LinkedList<GrammarRule> stack,
                                   LexicalScanner scanner, StringBuilder sb) {
-        sb.append("syntax error at line: ").append(inputToken.getLocation()).append(", around " +
-                "token: ").append(inputToken.getValue()).append('\n');
+        sb.append("syntax error at line: ").append(inputToken.getLocation())
+                .append(", around token: ").append(inputToken.getValue()).append('\n');
         if (rule.isTerminal()) {
             stack.pop();
             return;
@@ -200,20 +201,6 @@ public class Parser {
         return isInFollowSet;
     }
 
-    private static void outputError(String fileNm, String errMsg) throws IOException {
-        String prefix = Const.DIR_OUTPUT + "syntactic/result/";
-        String suffix = "__ParsingResult.txt";
-        String path = prefix + fileNm + suffix;
-        File file = new File(path);
-        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-        if (errMsg.isEmpty()) {
-            bw.write("parsing successfully");
-        }else {
-            bw.write(errMsg);
-        }
-        bw.close();
-    }
-
     private static void printLinkedList(LinkedList<String> list) {
         System.out.print("=> ");
         for (String aList : list) {
@@ -229,6 +216,5 @@ public class Parser {
         }
         return ret.trim();
     }
-
 
 }

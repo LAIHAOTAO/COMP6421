@@ -1,7 +1,10 @@
 package util;
 
+import common.Const;
 import semantic.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.Map;
@@ -11,26 +14,30 @@ import java.util.Map;
  */
 public class SymbolTableHelper {
 
-    public static SymbolTable getGlobalTable() {
-        if (!SymbolTableActionHandler.symbolTableList.isEmpty()) {
-            for (SymbolTable table : SymbolTableActionHandler.symbolTableList) {
-                if ("global table".equals(table.getName())) {
-                    return table;
-                }
-            }
-        }
-        System.err.println("The global table do not exit !!!");
-        return null;
-    }
+    private static final int CONSOLE = 1;
+    private static final int FILE = 2;
+    private static Formatter formatter;;
 
     public static void print() {
+        formatter = new Formatter(System.out);
         for (SymbolTable table : SymbolTableActionHandler.symbolTableList) {
-            print(table);
+            print(table, CONSOLE, null);
         }
+        formatter.close();
     }
 
-    private static void print(SymbolTable table) {
-        Formatter formatter = new Formatter(System.out);
+    public static void outputToFile(String fileNm) throws FileNotFoundException {
+        File file = new File(Const.DIR_OUTPUT + "semantic/table/" + fileNm + "__SymbolTable.txt");
+        formatter = new Formatter(file);
+
+        for (SymbolTable table : SymbolTableActionHandler.symbolTableList) {
+            print(table, FILE, fileNm);
+        }
+        formatter.close();
+    }
+
+    private static void print(SymbolTable table, int target, String fileNm) {
+
         formatter.format("Table Name: %s,  Parent Table Name: %s\n", table.getName(), table.getParentName());
         formatter.format("--------------------------------------------------------------------------------------------------\n");
         formatter.format("| %-15s | %-15s | %-40s | %-15s |\n", "name", "kind", "type", "link");

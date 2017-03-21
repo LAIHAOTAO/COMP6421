@@ -1,0 +1,18 @@
+class MyClass {
+    int x[3];
+    int addNum() {
+        int x;
+    };
+};
+
+program {
+    int x;
+    int y;
+    MyClass myClass;
+    MyClass myClass1;
+
+};
+
+int ff() {
+    int xx;
+};
