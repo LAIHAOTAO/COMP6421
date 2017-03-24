@@ -21,8 +21,23 @@ public class Parser {
     public static boolean turnOnDebug = false;
     private static Token inputToken;
     private static Token prevToken;
+    private static boolean isSuccess = true;
 
-    public static boolean parse(LexicalScanner scanner, ParserTable table) throws IOException {
+    public static final int FIRST_PARSE = 1;
+    public static final int SECOND_PARSE = 2;
+
+    public static boolean firstParse(LexicalScanner scanner, ParserTable table) throws IOException {
+        return parse(scanner, table, FIRST_PARSE);
+    }
+
+    public static boolean secondParse(LexicalScanner scanner, ParserTable table) throws IOException {
+        scanner.close();
+        scanner = new LexicalScanner(scanner.getPath());
+        return parse(scanner, table, SECOND_PARSE);
+    }
+
+
+    private static boolean parse(LexicalScanner scanner, ParserTable table, int parseNum) throws IOException {
 
         DerivationBuilder derivation = null;
         StringBuilder syntacticErrorCollector = new StringBuilder();
@@ -36,17 +51,18 @@ public class Parser {
 
         LinkedList<GrammarRule> parsingStack = new LinkedList<>();
         GrammarRule topRule;
-        boolean isSuccess = true;
 
         parsingStack.push(table.getDollar());
         parsingStack.push(table.getStart());
         inputToken = scanner.nextToken();
 
         // create global symbol table and add the the context stack
-        SymbolTable globalTable = new SymbolTable(null);
-        globalTable.setName("global table");
-        SymbolTableActionHandler.symbolTableList.add(globalTable);
-        ActionHandler.context.push(globalTable);
+        if (parseNum == FIRST_PARSE) {
+            SymbolTable globalTable = new SymbolTable(null);
+            globalTable.setName("global table");
+            SymbolTableActionHandler.symbolTableList.add(globalTable);
+            ActionHandler.context.push(globalTable);
+        }
 
         // if the stack is not empty or the input is not empty, just keep parsing
         while (!parsingStack.isEmpty() && inputToken != null) {
@@ -56,7 +72,7 @@ public class Parser {
 
             if (topRule.isAction()) {
                 ActionRule actionRule = (ActionRule) parsingStack.pop();
-                actionRule.execute(prevToken);
+                actionRule.execute(prevToken, parseNum);
             }
             // if the top rule is not action, keep the procedure we did in syntactic
             else {
@@ -152,7 +168,7 @@ public class Parser {
         }
         // ******************************************************************************* //
 
-        return isSuccess && ActionHandler.isSuccess;
+        return Parser.isSuccess && ActionHandler.isSuccess;
     }
 
     private static void skipError(GrammarRule rule, LinkedList<GrammarRule> stack,

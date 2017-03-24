@@ -1,6 +1,7 @@
 package syntactic;
 
 import lexical.Token;
+import semantic.SemanticActionHandler;
 import semantic.SymbolTableActionHandler;
 
 import java.util.LinkedList;
@@ -14,14 +15,22 @@ public class ActionRule extends GrammarRule {
         this.symbol = sym;
     }
 
-    public void execute(Token prevToken) {
+    public void execute(Token prevToken, int parseNum) {
         if (this.symbol.contains("sym_")) {
-            SymbolTableActionHandler.process(this.symbol, prevToken);
+            SymbolTableActionHandler.process(this.symbol, prevToken, parseNum);
+        }
+        else if (this.symbol.contains("sem_")) {
+            if (parseNum == Parser.SECOND_PARSE) {
+                SemanticActionHandler.process(this.symbol, prevToken);
+            }
+            // if it is the first parse, just ignore the semantic action
         }
         else {
-
+            throw new RuntimeException("No such semantic action");
         }
     }
+
+
 
     @Override
     public boolean isTerminal() {

@@ -1,23 +1,19 @@
-package semantic;
+package syntactic;
 
 import common.Const;
-import lexical.LexicalScanner;
-import org.junit.Test;
-import syntactic.GrammarFileReader;
-import syntactic.Parser;
-import syntactic.ParserGenerator;
+import semantic.GrammarInjector;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * Created by ERIC_LAI on 2017-03-20.
+ * Created by ERIC_LAI on 2017-03-23.
  */
-@SuppressWarnings("Duplicates")
-public class CorrectSemanticTest {
+public class ParserDriver {
 
-    @Test
-    public void test() throws IOException {
+    private ParserTable table;
+
+    public ParserDriver() throws IOException {
 
         String startSymbol = "prog";
 
@@ -62,12 +58,10 @@ public class CorrectSemanticTest {
         GrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
-        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/CorrectProgram.txt");
-        Parser.turnOnDebug = true;
-        boolean isSuccess = Parser.firstParse(scanner, pureGenerator.getParseTable());
-        System.out.println("parsing result: " + ((isSuccess) ? "success" : "fail"));
+        this.table = pureGenerator.getParseTable();
     }
 
-
-
+    public ParserTable getTable() {
+        return table;
+    }
 }

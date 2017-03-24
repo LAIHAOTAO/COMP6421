@@ -3,6 +3,7 @@ package semantic;
 
 import lexical.Token;
 import lexical.TokenType;
+import syntactic.Parser;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,72 +14,102 @@ import java.util.List;
  */
 public class SymbolTableActionHandler extends ActionHandler {
 
-    private static Token cacheTypeToken;
-    private static Token cacheIdToken;
-    private static Token cacheDimension;
-    private static String cacheFunction;
-    private static ArrayList<String> cacheParamNameList = new ArrayList<>();
     public static List<SymbolTable> symbolTableList = new ArrayList<>();
     public static StringBuilder symActionErrorCollector = new StringBuilder();
 
-    public static void process(String action, Token prevToken) {
+    public static void process(String action, Token prevToken, int parseNum) {
 
         SymbolTable table = getCurrentSymbolTable();
 
-        switch (action) {
-            case "sym_CreateProgram":
-                createProgram(table, prevToken);
-                break;
-            case "sym_CreateClassScope":
-                createClassScope(table, prevToken);
-                break;
-            case "sym_CreateFunction":
-                createFunction(table);
-                break;
-            case "sym_CreateVariable":
-                createVariable(table);
-                break;
-            case "sym_StartFunction":
-                startFunction(table);
-                break;
-            case "sym_StartMemberFunction":
-                startMemberFunction(table);
-                break;
-            case "sym_AddFunctionParameter":
-                addFunctionParameter(table);
-                break;
-            case "sym_StoreType":
-                cacheTypeToken = prevToken;
-                break;
-            case "sym_StoreId":
-                cacheIdToken = prevToken;
-                break;
-            case "sym_StoreDimension":
-                cacheDimension = prevToken;
-                break;
-            case "sym_EndScope":
-                // pop out the top symbol table of the context stack
-                if (!context.isEmpty()) {
-                    symbolTableList.add(context.pop());
-                } else {
-                    throw new RuntimeException("missing parentheses");
-                }
-                break;
-            default:
-                throw new RuntimeException("No such symbol table action");
+        if (parseNum == Parser.FIRST_PARSE) {
+            // if in the first parse, need to build the symbol table
+            switch (action) {
+                case "sym_CreateProgram":
+                    createProgram(table, prevToken);
+                    break;
+                case "sym_CreateClassScope":
+                    createClassScope(table, prevToken);
+                    break;
+                case "sym_CreateFunction":
+                    createFunction(table);
+                    break;
+                case "sym_CreateVariable":
+                    createVariable(table);
+                    break;
+                case "sym_StartFunction":
+                    startFunction(table);
+                    break;
+                case "sym_StartMemberFunction":
+                    startMemberFunction(table);
+                    break;
+                case "sym_AddFunctionParameter":
+                    addFunctionParameter(table);
+                    break;
+                case "sym_StoreType":
+                    cacheTypeToken = prevToken;
+                    break;
+                case "sym_StoreId":
+                    cacheIdToken = prevToken;
+                    break;
+                case "sym_StoreDimension":
+                    cacheDimension = prevToken;
+                    break;
+                case "sym_EndScope":
+                    // pop out the top symbol table of the context stack
+                    if (!context.isEmpty()) {
+                        symbolTableList.add(context.pop());
+                    } else {
+                        throw new RuntimeException("missing parentheses");
+                    }
+                    break;
+//                default:
+//                    throw new RuntimeException("No such symbol table action");
+            }
+        } else {
+            // if in the second parse, need to maintain the context
+            // for SemanticActionHandler
+            switch (action) {
+                case "sym_CreateProgram":
+                    context.push(getSymbolTableByName(prevToken.getValue()));
+                    break;
+                case "sym_CreateClassScope":
+                    context.push(getSymbolTableByName(prevToken.getValue()));
+                    break;
+                case "sym_CreateFunction":
+                    context.push(getSymbolTableByName(cacheFunction));
+                    break;
+                case "sym_EndScope":
+                    // pop out the top symbol table of the context stack
+                    if (!context.isEmpty()) {
+                        symbolTableList.add(context.pop());
+                    } else {
+                        throw new RuntimeException("missing parentheses");
+                    }
+                    break;
+                case "sym_CreateVariable":
+                case "sym_StartFunction":
+                case "sym_StartMemberFunction":
+                case "sym_AddFunctionParameter":
+                case "sym_StoreType":
+                case "sym_StoreId":
+                case "sym_StoreDimension":
+                    break;
+//                default:
+//                    throw new RuntimeException("Unknown error happen during second parse");
+            }
         }
     }
 
-    public static SymbolTable getGlobalTable() {
+    private static SymbolTable getSymbolTableByName(String name) {
+        String tableNm = name + " table";
         if (!symbolTableList.isEmpty()) {
             for (SymbolTable table : symbolTableList) {
-                if ("global table".equals(table.getName())) {
+                if (tableNm.equals(table.getName())) {
                     return table;
                 }
             }
         }
-        System.err.println("The global table do not exit !!!");
-        return null;
+        throw new RuntimeException("The " + name + "table do not exit !!!");
     }
 
     private static void startMemberFunction(SymbolTable currentTable) {

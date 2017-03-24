@@ -121,7 +121,7 @@ public class ParserTest {
         generator.processPureGrammar();
 
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "syntactic/TestDerivation.txt");
-        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
+        boolean isSuccess = Parser.firstParse(scanner, generator.getParseTable());
         System.out.println(isSuccess);
     }
 
@@ -159,7 +159,7 @@ public class ParserTest {
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES +
                 "syntactic/testprogram/program" + i + ".txt");
         System.out.println("===============" + "parsing program" + i + "==================");
-        boolean isSuccess = Parser.parse(scanner, generator.getParseTable());
+        boolean isSuccess = Parser.firstParse(scanner, generator.getParseTable());
         System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));
         System.out.println("parsing result file has been created");
     }

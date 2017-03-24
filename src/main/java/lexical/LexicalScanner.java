@@ -5,6 +5,7 @@ import common.Language;
 import exception.NoSuchLexemeException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +25,10 @@ public class LexicalScanner {
     private ArrayList<String> keyWordsList;
     private int handlingLocation = 1;
     private String fileNm;
+    private String path;
 
     public LexicalScanner(String path) {
+        this.path = path;
         int s = path.lastIndexOf(File.separatorChar);
         int l = path.lastIndexOf(".");
         this.fileNm = path.substring(s, l);
@@ -307,5 +310,17 @@ public class LexicalScanner {
             if (str.equals(word)) return true;
         }
         return false;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void close() {
+        try {
+            this.src.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -73,6 +73,10 @@ public class SrcFileReader {
         return dest;
     }
 
+    public void close() throws IOException {
+        this.br.close();
+    }
+
     public String getFilePath() {
         return filePath;
     }
