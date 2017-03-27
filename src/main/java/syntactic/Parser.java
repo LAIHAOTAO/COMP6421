@@ -161,7 +161,7 @@ public class Parser {
             derivation.close();
         }
         if (semanticErrorCollector.toString().isEmpty()) {
-            SymbolTableHelper.print();
+//            SymbolTableHelper.print();
             SymbolTableHelper.outputToFile(scanner.getFileNm());
         } else {
             System.err.println(semanticErrorCollector.toString());

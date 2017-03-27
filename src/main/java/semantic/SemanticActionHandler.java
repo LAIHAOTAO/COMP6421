@@ -3,10 +3,6 @@ package semantic;
 import lexical.Token;
 import semantic.Statement.AssignmentStatement;
 import semantic.expression.ExpressionContext;
-import semantic.expression.ExpressionElement;
-import semantic.symboltable.SymbolTable;
-
-import java.util.Stack;
 
 /**
  * Created by ERIC_LAI on 2017-03-18.
@@ -16,6 +12,7 @@ public class SemanticActionHandler extends ActionHandler {
     private static ExpressionContext exprContext = ExpressionContext.instance;
 
     public static void process(String action, Token token) {
+
         switch (action) {
             case "sem_PushVariableName":
                 exprContext.getCurrent().pushID(token.getValue());
@@ -39,6 +36,7 @@ public class SemanticActionHandler extends ActionHandler {
             case "sem_EndMultiplicationExpression":
 
             case "sem_PushIntLiteral":
+                exprContext.getCurrent().pushIntNum(Integer.parseInt(token.getValue()));
             case "sem_PushFloatLiteral":
 
             case "sem_PushAdditionOperation":

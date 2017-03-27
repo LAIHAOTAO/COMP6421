@@ -13,6 +13,7 @@ import java.io.IOException;
  */
 public class SemanticMigrationTest {
 
+
     @Test
     public void test() {
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/MigrationTest.txt");
@@ -26,7 +27,6 @@ public class SemanticMigrationTest {
             Parser.firstParse(scanner, parserDriver.getTable());
             boolean isSuccess = Parser.secondParse(scanner, parserDriver.getTable());
 
-            System.out.println("!!!!!!!!!!!!!!!!!!!");
             System.out.println("parsing result: " + ((isSuccess) ? "success" : "fail"));
 
         } catch (IOException e) {

@@ -1,11 +1,15 @@
 package semantic.expression;
 
+import semantic.value.Value;
+
 /**
  * Created by ERIC_LAI on 2017-03-24.
  */
 public abstract class ExpressionElement {
 
     protected final ExpressionContext context = ExpressionContext.instance;
+
+    public abstract Value getValue();
 
     public void pushID(String varName) {
 
@@ -35,6 +39,4 @@ public abstract class ExpressionElement {
 
     }
 
-
-//    protected
 }

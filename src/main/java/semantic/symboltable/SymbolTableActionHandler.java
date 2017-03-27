@@ -76,7 +76,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 case "sym_CreateProgram":
                     symContext.push(getSymbolTableByName(prevToken.getValue()));
                     ExpressionContext.setCurrentFunction(
-                            (FunctionAbstractEntry) getSymbolTableByName("global table").search("program")
+                            (FunctionAbstractEntry) getSymbolTableByName("global").search("program")
                     );
                     break;
                 case "sym_CreateClassScope":
