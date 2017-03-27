@@ -4,8 +4,8 @@ import common.Const;
 import lexical.LexicalScanner;
 import lexical.Token;
 import semantic.ActionHandler;
-import semantic.SymbolTable;
-import semantic.SymbolTableActionHandler;
+import semantic.symboltable.SymbolTable;
+import semantic.symboltable.SymbolTableActionHandler;
 import util.ErrorFileGenerator;
 import util.SymbolTableHelper;
 
@@ -56,12 +56,12 @@ public class Parser {
         parsingStack.push(table.getStart());
         inputToken = scanner.nextToken();
 
-        // create global symbol table and add the the context stack
+        // create global symbol table and add the the semContext stack
         if (parseNum == FIRST_PARSE) {
             SymbolTable globalTable = new SymbolTable(null);
             globalTable.setName("global table");
             SymbolTableActionHandler.symbolTableList.add(globalTable);
-            ActionHandler.context.push(globalTable);
+            ActionHandler.symContext.push(globalTable);
         }
 
         // if the stack is not empty or the input is not empty, just keep parsing

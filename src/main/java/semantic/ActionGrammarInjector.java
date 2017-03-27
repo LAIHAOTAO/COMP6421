@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by ERIC_LAI on 2017-03-18.
  */
-public class GrammarInjector {
+public class ActionGrammarInjector {
 
 
     public static void addSemanticActionInGrammar(ParserGenerator generator, HashMap<String, NonTerminalRule> map) {

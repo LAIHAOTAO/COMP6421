@@ -1,6 +1,6 @@
 package semantic;
 
-import semantic.SymbolTable;
+import semantic.symboltable.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by ERIC_LAI on 2017-03-20.
  */
-public class DuplicateHelper {
+public class DuplicateDeclHandler {
 
     public static String getNewName (SymbolTable table, String name) {
         Set<String> tableKeySet = table.keySet();

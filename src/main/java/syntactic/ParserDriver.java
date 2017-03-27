@@ -1,7 +1,7 @@
 package syntactic;
 
 import common.Const;
-import semantic.GrammarInjector;
+import semantic.ActionGrammarInjector;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class ParserDriver {
         }
 
         // update the grammar
-        GrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
+        ActionGrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
         this.table = pureGenerator.getParseTable();

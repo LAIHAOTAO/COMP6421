@@ -1,12 +1,16 @@
-package semantic;
+package semantic.symboltable;
 
 
 import lexical.Token;
 import lexical.TokenType;
+import semantic.ActionHandler;
+import semantic.DuplicateDeclHandler;
+import semantic.expression.ExpressionContext;
+import semantic.symboltable.entry.*;
+import semantic.symboltable.type.*;
 import syntactic.Parser;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,7 +41,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                     createVariable(table);
                     break;
                 case "sym_StartFunction":
-                    startFunction(table);
+                    startFunction(table, true);
                     break;
                 case "sym_StartMemberFunction":
                     startMemberFunction(table);
@@ -52,12 +56,12 @@ public class SymbolTableActionHandler extends ActionHandler {
                     cacheIdToken = prevToken;
                     break;
                 case "sym_StoreDimension":
-                    cacheDimension = prevToken;
+                    cacheDimensionList.add(prevToken);
                     break;
                 case "sym_EndScope":
-                    // pop out the top symbol table of the context stack
-                    if (!context.isEmpty()) {
-                        symbolTableList.add(context.pop());
+                    // pop out the top symbol table of the semContext stack
+                    if (!symContext.isEmpty()) {
+                        symbolTableList.add(symContext.pop());
                     } else {
                         throw new RuntimeException("missing parentheses");
                     }
@@ -66,22 +70,28 @@ public class SymbolTableActionHandler extends ActionHandler {
 //                    throw new RuntimeException("No such symbol table action");
             }
         } else {
-            // if in the second parse, need to maintain the context
-            // for SemanticActionHandler
+            // if in the second parse, need to maintain
+            // the symContext for SemanticActionHandler
             switch (action) {
                 case "sym_CreateProgram":
-                    context.push(getSymbolTableByName(prevToken.getValue()));
+                    symContext.push(getSymbolTableByName(prevToken.getValue()));
+                    ExpressionContext.setCurrentFunction(
+                            (FunctionAbstractEntry) getSymbolTableByName("global table").search("program")
+                    );
                     break;
                 case "sym_CreateClassScope":
-                    context.push(getSymbolTableByName(prevToken.getValue()));
+                    symContext.push(getSymbolTableByName(prevToken.getValue()));
                     break;
                 case "sym_CreateFunction":
-                    context.push(getSymbolTableByName(cacheFunction));
+                    symContext.push(getSymbolTableByName(cacheFunction));
+                    ExpressionContext.setCurrentFunction(
+                            (FunctionAbstractEntry) getSymbolTableByName(cacheFunction).getParent().search(cacheFunction)
+                    );
                     break;
                 case "sym_EndScope":
-                    // pop out the top symbol table of the context stack
-                    if (!context.isEmpty()) {
-                        symbolTableList.add(context.pop());
+                    // pop out the top symbol table of the semContext stack
+                    if (!symContext.isEmpty()) {
+                        symContext.pop();
                     } else {
                         throw new RuntimeException("missing parentheses");
                     }
@@ -113,54 +123,60 @@ public class SymbolTableActionHandler extends ActionHandler {
     }
 
     private static void startMemberFunction(SymbolTable currentTable) {
-        startFunction(currentTable);
+        startFunction(currentTable, false);
     }
 
     private static void createFunction(SymbolTable currentTable) {
+        // create a new function table for the new function
         SymbolTable functionTable = new SymbolTable(currentTable);
         functionTable.setName(cacheFunction + " table");
-        SymbolTableEntry entry = currentTable.search(cacheFunction);
-        entry.setScope(functionTable);
+        // get the function entry from the current table
+        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.search(cacheFunction);
+        functionEntry.setScope(functionTable);
 
         // add parameters to the function table
-        LinkedList<SymbolTableEntry.Type> paramTypeList = entry.getParamTypeList();
-        if (paramTypeList.size() > 1) {
+        List<SymbolTableEntryType> paramTypeList = functionEntry.getParamTypeList();
+        if (!paramTypeList.isEmpty()) {
             for (int i = 0; i < paramTypeList.size(); i++) {
-                String name = cacheParamNameList.get(i);
-                SymbolTableEntry.Type type = paramTypeList.get(i);
-                SymbolTableEntry.Kind kind = SymbolTableEntry.Kind.Parameter;
-                SymbolTableEntry paramEntry = new SymbolTableEntry(name, kind, type, null);
-                if (entry.getParamDimensionList().size() != 0) {
-                    paramEntry.setDimension(entry.getParamDimensionList().get(i));
-                }
-                functionTable.insert(cacheParamNameList.get(i), paramEntry);
+                String name = cacheParamList.get(i);
+                SymbolTableEntryType type = paramTypeList.get(i);
+                ParameterEntry paramEntry = new ParameterEntry(name, type);
+                functionTable.insert(cacheParamList.get(i), paramEntry);
             }
         }
 
         // clear the parameters list
-        cacheParamNameList.clear();
+        cacheParamList.clear();
 
-        context.push(functionTable);
+        symContext.push(functionTable);
     }
 
     private static void addFunctionParameter(SymbolTable currentTable) {
-        SymbolTableEntry entry = currentTable.search(cacheFunction);
-        SymbolTableEntry.Type type = getType(cacheTypeToken);
-
-        // check this variable is an array or not
-        if (cacheDimension != null) {
-            entry.addParamDimensionList(Integer.parseInt(cacheDimension.getValue()));
-            type = changeTypeToArray(type);
+        // get the function entry
+        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.search(cacheFunction);
+        // get the temporary type of the parameter
+        SymbolTableEntryType type = getType(cacheTypeToken);
+        ArrayType type1;
+        if (!cacheDimensionList.isEmpty()) {
+            // if the parameter is an array, cast its type to ArrayType
+            type1 = changeTypeToArray(type);
+            for (Token token : cacheDimensionList) {
+                type1.addDimension(Integer.parseInt(token.getValue()));
+            }
+            functionEntry.addParamType(type1);
             // reset the cache
-            cacheDimension = null;
+            cacheDimensionList.clear();
+        } else {
+            // if the parameter is not an array, just add it into the parameter list
+            functionEntry.addParamType(type);
         }
-        entry.addParameterType(type);
 
         // cache the parameter name
-        cacheParamNameList.add(cacheIdToken.getValue());
+        String paramName = cacheIdToken.getValue();
+        cacheParamList.add(paramName);
     }
 
-    private static void startFunction(SymbolTable currentTable) {
+    private static void startFunction(SymbolTable currentTable, boolean freeFunction) {
         String name = cacheIdToken.getValue();
 
         if (currentTable.exist(name)) {
@@ -168,15 +184,16 @@ public class SymbolTableActionHandler extends ActionHandler {
             symActionErrorCollector.append("Duplicate function declaration of function name ")
                     .append(name).append(" around line: ")
                     .append(cacheIdToken.getLocation()).append("\n");
-            name = DuplicateHelper.getNewName(currentTable, name);
+            name = DuplicateDeclHandler.getNewName(currentTable, name);
             isSuccess = false;
         }
-        SymbolTableEntry entry = new SymbolTableEntry(
-                name,
-                SymbolTableEntry.Kind.Function,
-                getType(cacheTypeToken),
-                null
-        );
+
+        SymbolTableEntry entry;
+        if (freeFunction)
+            entry = new FunctionEntry(name, getType(cacheTypeToken), null);
+        else
+            entry = new MemberFunctionEntry(name, getType(cacheTypeToken), null);
+
         currentTable.insert(name, entry);
 
         // cache the function name for adding parameter
@@ -190,26 +207,25 @@ public class SymbolTableActionHandler extends ActionHandler {
                     .append(name)
                     .append(" around line: ")
                     .append(cacheIdToken.getLocation()).append("\n");
-            name = DuplicateHelper.getNewName(currentTable, name);
+            name = DuplicateDeclHandler.getNewName(currentTable, name);
             isSuccess = false;
         }
-        SymbolTableEntry.Type type = getType(cacheTypeToken);
 
-        SymbolTableEntry entry = new SymbolTableEntry(
-                name,
-                SymbolTableEntry.Kind.Variable,
-                null,
-                null
-        );
+        SymbolTableEntryType type = getType(cacheTypeToken);
+        SymbolTableEntry entry;
+        entry = new VariableEntry(name, type, null);
+        entry.setType(type);
 
         // check this variable is an array or not
-        if (cacheDimension != null) {
-            entry.setDimension(Integer.parseInt(cacheDimension.getValue()));
-            type = changeTypeToArray(type);
+        if (!cacheDimensionList.isEmpty()) {
+            ArrayType type1 = changeTypeToArray(type);
+            for (Token token : cacheDimensionList) {
+                type1.addDimension(Integer.parseInt(token.getValue()));
+            }
+            entry.setType(type1);
             // reset the cache
-            cacheDimension = null;
+            cacheDimensionList.clear();
         }
-        entry.setType(type);
 
         currentTable.insert(name, entry);
     }
@@ -222,22 +238,16 @@ public class SymbolTableActionHandler extends ActionHandler {
                     .append(name)
                     .append(" around line: ")
                     .append(prevToken.getLocation()).append("\n");
-            name = DuplicateHelper.getNewName(currentTable, name);
+            name = DuplicateDeclHandler.getNewName(currentTable, name);
             isSuccess = false;
         }
 
         SymbolTable classScope = new SymbolTable(currentTable);
         classScope.setName(name + " table");
-        SymbolTableEntry entry = new SymbolTableEntry(
-                name,
-                SymbolTableEntry.Kind.Class,
-                SymbolTableEntry.Type.Null,
-                classScope
-        );
+        SymbolTableEntry entry = new ClassEntry(name, classScope);
 
         currentTable.insert(name, entry);
-        context.push(classScope);
-
+        symContext.push(classScope);
 
     }
 
@@ -252,41 +262,28 @@ public class SymbolTableActionHandler extends ActionHandler {
 
         SymbolTable programScope = new SymbolTable(currentTable);
         programScope.setName(name + " table");
-        SymbolTableEntry entry = new SymbolTableEntry(
-                name,
-                SymbolTableEntry.Kind.Function,
-                SymbolTableEntry.Type.Null,
-                programScope
-        );
+        SymbolTableEntry entry = new FunctionEntry(name, new NoneType(), programScope);
 
         currentTable.insert(name, entry);
-        context.push(programScope);
+        symContext.push(programScope);
 
     }
 
-    private static SymbolTableEntry.Type changeTypeToArray(SymbolTableEntry.Type type) {
-        switch (type) {
-            case Int:
-                return SymbolTableEntry.Type.IntArray;
-            case Float:
-                return SymbolTableEntry.Type.FloatArray;
-            case Class:
-                return SymbolTableEntry.Type.ClassArray;
-        }
-        return null;
+    private static ArrayType changeTypeToArray(SymbolTableEntryType type) {
+        return new ArrayType(type);
     }
 
-    private static SymbolTableEntry.Type getType(Token cacheType) {
+    private static SymbolTableEntryType getType(Token cacheType) {
         TokenType type = cacheType.getType();
         switch (type) {
             case INT:
-                return SymbolTableEntry.Type.Int;
+                return new IntType();
             case FLOAT:
-                return SymbolTableEntry.Type.Float;
+                return new FloatType();
             case ID:
-                return SymbolTableEntry.Type.Class;
+                return new ClassType(cacheType.getValue());
         }
-        return null;
+        throw new RuntimeException("No such type defined in the grammar");
     }
 
 }

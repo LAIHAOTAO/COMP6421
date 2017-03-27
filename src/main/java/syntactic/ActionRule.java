@@ -2,7 +2,7 @@ package syntactic;
 
 import lexical.Token;
 import semantic.SemanticActionHandler;
-import semantic.SymbolTableActionHandler;
+import semantic.symboltable.SymbolTableActionHandler;
 
 import java.util.LinkedList;
 
@@ -22,6 +22,7 @@ public class ActionRule extends GrammarRule {
         else if (this.symbol.contains("sem_")) {
             if (parseNum == Parser.SECOND_PARSE) {
                 SemanticActionHandler.process(this.symbol, prevToken);
+                System.out.println(this.symbol + ": " + prevToken);
             }
             // if it is the first parse, just ignore the semantic action
         }

@@ -1,5 +1,5 @@
 class MyClass {
-    int x[3];
+    int x[3][8];
     int addNum() {
         int x;
     };
@@ -8,11 +8,11 @@ class MyClass {
 program {
     int x;
     int y;
-    MyClass myClass;
+    MyClass myClass[4][5];
     MyClass myClass1;
 
 };
 
-int ff() {
+int ff(int x, int y[2][2]) {
     int xx;
 };

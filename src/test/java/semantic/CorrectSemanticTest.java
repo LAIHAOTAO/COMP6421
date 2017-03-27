@@ -59,7 +59,7 @@ public class CorrectSemanticTest {
         }
 
         // update the grammar
-        GrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
+        ActionGrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/CorrectProgram.txt");

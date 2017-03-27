@@ -26,6 +26,7 @@ public class SemanticMigrationTest {
             Parser.firstParse(scanner, parserDriver.getTable());
             boolean isSuccess = Parser.secondParse(scanner, parserDriver.getTable());
 
+            System.out.println("!!!!!!!!!!!!!!!!!!!");
             System.out.println("parsing result: " + ((isSuccess) ? "success" : "fail"));
 
         } catch (IOException e) {

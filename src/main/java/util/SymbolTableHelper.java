@@ -1,12 +1,18 @@
 package util;
 
 import common.Const;
-import semantic.*;
+import semantic.symboltable.SymbolTable;
+import semantic.symboltable.SymbolTableActionHandler;
+import semantic.symboltable.SymbolTableEntry;
+import semantic.symboltable.entry.FunctionAbstractEntry;
+import semantic.symboltable.type.ArrayType;
+import semantic.symboltable.type.SymbolTableEntryType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Formatter;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +27,7 @@ public class SymbolTableHelper {
     public static void print() {
         formatter = new Formatter(System.out);
         for (SymbolTable table : SymbolTableActionHandler.symbolTableList) {
-            print(table, CONSOLE, null);
+            print(table);
         }
         formatter.close();
     }
@@ -31,12 +37,12 @@ public class SymbolTableHelper {
         formatter = new Formatter(file);
 
         for (SymbolTable table : SymbolTableActionHandler.symbolTableList) {
-            print(table, FILE, fileNm);
+            print(table);
         }
         formatter.close();
     }
 
-    private static void print(SymbolTable table, int target, String fileNm) {
+    private static void print(SymbolTable table) {
 
         formatter.format("Table Name: %s,  Parent Table Name: %s\n", table.getName(), table.getParentName());
         formatter.format("--------------------------------------------------------------------------------------------------\n");
@@ -45,40 +51,10 @@ public class SymbolTableHelper {
 
         for (Map.Entry<String, SymbolTableEntry> entry : table.entrySet()) {
             SymbolTable scope = entry.getValue().getScope();
-
-            StringBuilder paramStrBuilder = new StringBuilder();
-            LinkedList<SymbolTableEntry.Type> paramTypes = entry.getValue().getParamTypeList();
-            if (!paramTypes.isEmpty()) {
-                for (int i = 0; i < paramTypes.size(); i++) {
-                    if (i == 0) {
-                        paramStrBuilder.append(": ");
-                        paramStrBuilder.append(paramTypes.get(i).toString());
-                        LinkedList<Integer> d = entry.getValue().getParamDimensionList();
-                        if (d.size() != 0) {
-                            paramStrBuilder.append("[").append(d.get(i)).append("]");
-                        }
-                    } else {
-                        paramStrBuilder.append(", ").append(paramTypes.get(i).toString());
-                        LinkedList<Integer> d = entry.getValue().getParamDimensionList();
-                        if (d.size() != 0) {
-                            paramStrBuilder.append("[").append(d.get(i)).append("]");
-                        }
-                    }
-                }
-
-            }
-
-            SymbolTableEntry.Type type = entry.getValue().getType();
-            StringBuilder typeStrBuilder = new StringBuilder();
-            typeStrBuilder.append(type.toString());
-            if (type.toString().contains("Array")) {
-                typeStrBuilder.append("[").append(entry.getValue().getDimension()).append("]");
-            }
-
             formatter.format("| %-15s | %-15s | %-40s | %-15s |\n",
                     entry.getValue().getName(),
                     entry.getValue().getKind(),
-                    typeStrBuilder.toString() + paramStrBuilder.toString(),
+                    entry.getValue().getType().toString(),
                     (scope != null) ? scope.getName() : "null"
             );
         }

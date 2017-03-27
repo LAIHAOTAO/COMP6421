@@ -1,4 +1,4 @@
-package semantic;
+package semantic.symboltable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Set;
 public class SymbolTable {
 
     private HashMap<String, SymbolTableEntry> entries;
-    private String name;
+    private String name = "";
     private SymbolTable parent;
 
     public SymbolTable(SymbolTable parent) {
@@ -62,5 +62,9 @@ public class SymbolTable {
 
     public Set<String> keySet() {
         return this.entries.keySet();
+    }
+
+    public SymbolTable getParent() {
+        return parent;
     }
 }
