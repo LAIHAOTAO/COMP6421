@@ -23,6 +23,17 @@ public class FunctionAbstractEntry extends SymbolTableEntry {
         statementList = new LinkedList<>();
     }
 
+    @Override
+    protected int calculateSize() {
+        int size = 0;
+        for (SymbolTableEntry e : getScope().valueSet()) {
+            if (e instanceof VariableEntry || e instanceof ParameterEntry) {
+                size += e.getSize();
+            }
+        }
+        return size;
+    }
+
     public void addParamType(SymbolTableEntryType type) {
         this.paramTypeList.add(type);
     }

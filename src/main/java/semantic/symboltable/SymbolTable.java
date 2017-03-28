@@ -12,18 +12,31 @@ public class SymbolTable {
     private HashMap<String, SymbolTableEntry> entries;
     private String name = "";
     private SymbolTable parent;
+    private int currentOffset;
 
     public SymbolTable(SymbolTable parent) {
         this.parent = parent;
         this.entries = new HashMap<>();
+        this.currentOffset = 0;
     }
 
     public SymbolTableEntry search(String key) {
         return this.entries.get(key);
     }
 
+    public SymbolTableEntry memberSearch(String key) {
+        SymbolTableEntry e = search(key);
+        if (e != null) return e;
+        if (parent != null) e = parent.search(key);
+        return e;
+    }
+
     public void insert(String key, SymbolTableEntry entry) {
         this.entries.put(key, entry);
+
+        // keep update the the offset for address distribution
+        entry.setOffset(this.currentOffset);
+        this.currentOffset += entry.getSize();
     }
 
     public void delete(String key) {
@@ -64,7 +77,15 @@ public class SymbolTable {
         return this.entries.keySet();
     }
 
+    public Set<SymbolTableEntry> valueSet() {
+        return this.valueSet();
+    }
+
     public SymbolTable getParent() {
         return parent;
+    }
+
+    public int getSize() {
+        return this.currentOffset;
     }
 }

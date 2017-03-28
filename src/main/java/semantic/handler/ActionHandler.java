@@ -1,4 +1,4 @@
-package semantic;
+package semantic.handler;
 
 import lexical.Token;
 import semantic.expression.ExpressionContext;

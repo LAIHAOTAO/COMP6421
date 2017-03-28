@@ -5,6 +5,7 @@ import semantic.symboltable.SymbolTable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by ERIC_LAI on 2017-03-26.
@@ -21,7 +22,13 @@ public class ArrayType implements SymbolTableEntryType {
 
     @Override
     public int getSize() {
-        return 0;
+        int d = 1;
+        for (Integer integer : dimension) {
+            if (integer != null) {
+                d *= integer;
+            }
+        }
+        return d * type.getSize();
     }
 
     @Override
@@ -38,6 +45,24 @@ public class ArrayType implements SymbolTableEntryType {
         return str;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ArrayType) {
+            ArrayType other = (ArrayType) obj;
+            if (Objects.equals(this.type, other.getArrayTypeType())) {
+                List<Integer> otherDimension = other.getDimension();
+                for (int i = 0; i < this.dimension.size(); i++) {
+                    if (!Objects.equals(this.dimension.get(i), otherDimension.get(i))) {
+                        return false;
+                    }
+                }
+                // if the type and dimension size are identical
+                return true;
+
+            } else return false;
+        }return false;
+    }
+
     public List<Integer> getDimension() {
         return dimension;
     }
@@ -48,5 +73,9 @@ public class ArrayType implements SymbolTableEntryType {
 
     public void addDimension(int d) {
         this.dimension.add(d);
+    }
+
+    public SymbolTableEntryType getArrayTypeType() {
+        return this.type;
     }
 }

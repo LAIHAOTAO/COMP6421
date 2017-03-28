@@ -11,4 +11,5 @@ public class MemberFunctionEntry extends FunctionAbstractEntry {
     public MemberFunctionEntry(String name, SymbolTableEntryType type, SymbolTable scope) {
         super(name, Kind.Function, type, scope);
     }
+
 }

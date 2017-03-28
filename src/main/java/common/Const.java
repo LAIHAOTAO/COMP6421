@@ -19,8 +19,11 @@ public class Const {
 
     public static final String DIR_CONFIG = DIR_RES + "configuration/";
 
+    public static final int OFFSET_INIT = -1;
+
     public enum ErrorLevel {
         Lexical, Syntactic, Semantic;
+
         @Override
         public String toString() {
             return super.toString().toLowerCase();

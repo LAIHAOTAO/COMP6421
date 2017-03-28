@@ -20,4 +20,9 @@ public class IntType implements SymbolTableEntryType {
     public String toString() {
         return "Int";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof IntType;
+    }
 }

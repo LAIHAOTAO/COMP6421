@@ -3,11 +3,11 @@ package syntactic;
 import common.Const;
 import lexical.LexicalScanner;
 import lexical.Token;
-import semantic.ActionHandler;
+import semantic.handler.ActionHandler;
 import semantic.symboltable.SymbolTable;
-import semantic.symboltable.SymbolTableActionHandler;
+import semantic.handler.SymbolTableActionHandler;
 import util.ErrorFileGenerator;
-import util.SymbolTableHelper;
+import util.SymbolTablePrinter;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -161,8 +161,8 @@ public class Parser {
             derivation.close();
         }
         if (semanticErrorCollector.toString().isEmpty()) {
-//            SymbolTableHelper.print();
-            SymbolTableHelper.outputToFile(scanner.getFileNm());
+//            SymbolTablePrinter.print();
+            SymbolTablePrinter.outputToFile(scanner.getFileNm());
         } else {
             System.err.println(semanticErrorCollector.toString());
         }

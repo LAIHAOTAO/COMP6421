@@ -2,23 +2,18 @@ package util;
 
 import common.Const;
 import semantic.symboltable.SymbolTable;
-import semantic.symboltable.SymbolTableActionHandler;
+import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTableEntry;
-import semantic.symboltable.entry.FunctionAbstractEntry;
-import semantic.symboltable.type.ArrayType;
-import semantic.symboltable.type.SymbolTableEntryType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Formatter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by ERIC_LAI on 2017-03-19.
  */
-public class SymbolTableHelper {
+public class SymbolTablePrinter {
 
     private static final int CONSOLE = 1;
     private static final int FILE = 2;

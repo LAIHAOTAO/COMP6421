@@ -1,8 +1,8 @@
 package syntactic;
 
 import lexical.Token;
-import semantic.SemanticActionHandler;
-import semantic.symboltable.SymbolTableActionHandler;
+import semantic.handler.SemanticActionHandler;
+import semantic.handler.SymbolTableActionHandler;
 
 import java.util.LinkedList;
 
@@ -29,9 +29,7 @@ public class ActionRule extends GrammarRule {
             throw new RuntimeException("No such semantic action");
         }
     }
-
-
-
+    
     @Override
     public boolean isTerminal() {
         return false;

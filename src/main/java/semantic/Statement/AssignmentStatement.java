@@ -1,12 +1,15 @@
 package semantic.Statement;
 
 import semantic.expression.ExpressionElement;
+import semantic.expression.TypedExpressionElement;
 import semantic.expression.VariableElementFragment;
+import semantic.symboltable.type.SymbolTableEntryType;
+import semantic.value.Value;
 
 /**
  * Created by ERIC_LAI on 2017-03-24.
  */
-public class AssignmentStatement extends ExpressionElement implements Statement{
+public class AssignmentStatement extends TypedExpressionElement implements Statement{
 
     public enum State {
         WAIT_LHS,
@@ -17,11 +20,24 @@ public class AssignmentStatement extends ExpressionElement implements Statement{
     }
 
     private State currentState;
-    private String lhs;
-    private String rhs;
+    private Value lhs;
+    private Value rhs;
 
     public AssignmentStatement() {
         this.currentState = State.WAIT_LHS;
+    }
+
+    @Override
+    public SymbolTableEntryType getType() {
+
+        // todo
+        return null;
+    }
+
+    @Override
+    public Value getValue() {
+        // todo
+        return null;
     }
 
     @Override
@@ -40,10 +56,10 @@ public class AssignmentStatement extends ExpressionElement implements Statement{
     @Override
     public void accept(ExpressionElement expr) {
         if (currentState == State.LHS) {
-            lhs = expr.toString();
+            lhs = expr.getValue();
             currentState = State.WAIT_RHS;
         } else if (currentState == State.RHS) {
-            rhs = expr.toString();
+            rhs = expr.getValue();
             currentState = State.DONE;
             context.finish();
             System.out.println("finish!!!!" + lhs + " = " + rhs);

@@ -1,11 +1,12 @@
 package semantic.symboltable;
 
+import common.Const;
 import semantic.symboltable.type.SymbolTableEntryType;
 
 /**
  * Created by ERIC_LAI on 2017-03-18.
  */
-public class SymbolTableEntry {
+public abstract class SymbolTableEntry {
 
     public enum Kind {
         Class,
@@ -18,6 +19,7 @@ public class SymbolTableEntry {
     private Kind kind;
     private SymbolTableEntryType type;
     private SymbolTable scope;
+    private int offset;
 
 
     public SymbolTableEntry(String name, Kind kind, SymbolTableEntryType type, SymbolTable scope) {
@@ -25,7 +27,14 @@ public class SymbolTableEntry {
         this.kind = kind;
         this.type = type;
         this.scope = scope;
+        this.offset = Const.OFFSET_INIT;
     }
+
+    /**
+     * Force all subclass to provide the size interface
+     * @return
+     */
+    protected abstract int calculateSize();
 
     public String getName() {
         return name;
@@ -50,4 +59,18 @@ public class SymbolTableEntry {
     public void setType(SymbolTableEntryType type) {
         this.type = type;
     }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getSize() {
+        return calculateSize();
+    }
+
+
 }

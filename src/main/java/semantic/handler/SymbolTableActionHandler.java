@@ -1,11 +1,12 @@
-package semantic.symboltable;
+package semantic.handler;
 
 
 import lexical.Token;
 import lexical.TokenType;
-import semantic.ActionHandler;
 import semantic.DuplicateDeclHandler;
 import semantic.expression.ExpressionContext;
+import semantic.symboltable.SymbolTable;
+import semantic.symboltable.SymbolTableEntry;
 import semantic.symboltable.entry.*;
 import semantic.symboltable.type.*;
 import syntactic.Parser;
@@ -225,6 +226,19 @@ public class SymbolTableActionHandler extends ActionHandler {
             entry.setType(type1);
             // reset the cache
             cacheDimensionList.clear();
+        }
+
+        // if the type is class type, search the class from global table (class declaration
+        // must be in the global table) and pass the specific class entry reference to its type
+        if (type instanceof ClassType ||
+                (type instanceof ArrayType && ((ArrayType) type).getArrayTypeType() instanceof ClassType)) {
+            @SuppressWarnings("ConstantConditions")
+            ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(((ClassType) type).getName());
+            if (classEntry == null) {
+                throw new RuntimeException("Attempt the use an undefined class at line: " + cacheIdToken.getLocation());
+            } else {
+                ((ClassType) classEntry.getType()).setEntry(classEntry);
+            }
         }
 
         currentTable.insert(name, entry);
