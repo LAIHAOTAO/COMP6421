@@ -43,6 +43,7 @@ public class AbstractRelationAndMathExpressionFragment extends TypedExpressionEl
     @Override
     public Value getValue() {
         // todo
+//        if (state)
         return null;
     }
 

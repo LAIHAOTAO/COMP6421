@@ -2,7 +2,7 @@ package semantic.expression;
 
 import semantic.symboltable.type.IntType;
 import semantic.symboltable.type.SymbolTableEntryType;
-import semantic.value.StaticIntValue;
+import semantic.value.StaticNumValue;
 import semantic.value.Value;
 
 /**
@@ -18,7 +18,7 @@ public class IntNumExpressionElement extends TypedExpressionElement{
 
     @Override
     public Value getValue() {
-        return new StaticIntValue(i);
+        return new StaticNumValue(i);
     }
 
     @Override

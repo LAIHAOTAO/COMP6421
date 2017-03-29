@@ -1,5 +1,7 @@
 package semantic.value;
 
+import codegenerate.CodeGenerateContext;
+
 /**
  * Created by ERIC_LAI on 2017-03-27.
  */
@@ -14,7 +16,7 @@ public class VoidValue implements Value {
     }
 
     @Override
-    public Value getUsedValue() {
+    public Value getUsedValue(CodeGenerateContext context) {
         return null;
     }
 
@@ -24,7 +26,7 @@ public class VoidValue implements Value {
     }
 
     @Override
-    public RegisterValue getRegisterValue() {
+    public RegisterValue getRegisterValue(CodeGenerateContext context) {
         return null;
     }
 }

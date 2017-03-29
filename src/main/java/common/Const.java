@@ -21,6 +21,8 @@ public class Const {
 
     public static final int OFFSET_INIT = -1;
 
+    public static final int REVERSED_REG_NUM = 3;
+
     public enum ErrorLevel {
         Lexical, Syntactic, Semantic;
 

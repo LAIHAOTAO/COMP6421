@@ -1,6 +1,8 @@
 package semantic.expression;
 
 import codegenerate.MathOpt;
+import semantic.value.MathValue;
+import semantic.value.Value;
 
 import java.util.Objects;
 
@@ -104,4 +106,15 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
             super.pushMultiplicationOp(op);
         }
     }
+
+    @Override
+    public Value getValue() {
+        if (this.state == State.WAIT_OP) {
+            return this.first.getValue();
+        } else {
+            return new MathValue(this.operator, this.first.getValue(), this.second.getValue());
+        }
+    }
+
+
 }
