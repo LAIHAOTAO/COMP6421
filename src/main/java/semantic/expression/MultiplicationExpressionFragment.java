@@ -1,7 +1,10 @@
 package semantic.expression;
 
 import codegenerate.MathOpt;
+import semantic.symboltable.type.IntType;
+import semantic.symboltable.type.SymbolTableEntryType;
 import semantic.value.MathValue;
+import semantic.value.StaticNumValue;
 import semantic.value.Value;
 
 import java.util.Objects;
@@ -24,6 +27,15 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
 
     public MultiplicationExpressionFragment() {
         this.state = State.WAIT_FIRST;
+    }
+
+    @Override
+    public SymbolTableEntryType getType() {
+        try {
+            return first.getType();
+        } catch (Throwable e) {
+            return new IntType();
+        }
     }
 
     @Override
@@ -63,7 +75,7 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
                     this.second = (TypedExpressionElement) expr;
 
                     // type checking
-                    if (Objects.equals(first.getType(), second.getType())) {
+                    if (!Objects.equals(first.getType(), second.getType())) {
                         throw new RuntimeException("Type error: " + first.getType() + " is not compatible with " +
                                 second.getType() + " for operator: " + operator.symbol);
                     }
@@ -73,7 +85,7 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
                     break;
                 default:
                     super.accept(expr);
-
+                    break;
             }
         } else {
             super.accept(expr);
@@ -94,6 +106,7 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
                 break;
             default:
                 super.pushIntNum(i);
+                break;
         }
     }
 
@@ -109,10 +122,14 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
 
     @Override
     public Value getValue() {
-        if (this.state == State.WAIT_OP) {
-            return this.first.getValue();
-        } else {
-            return new MathValue(this.operator, this.first.getValue(), this.second.getValue());
+        try {
+            if (this.state == State.WAIT_OP) {
+                return this.first.getValue();
+            } else {
+                return new MathValue(this.operator, this.first.getValue(), this.second.getValue());
+            }
+        } catch (Throwable e) {
+            return new StaticNumValue(0);
         }
     }
 

@@ -8,6 +8,8 @@ public abstract class Instruction {
     protected String label;
     protected String comment;
 
+
+
     public Instruction() {
         this.label = "";
         this.comment = "";

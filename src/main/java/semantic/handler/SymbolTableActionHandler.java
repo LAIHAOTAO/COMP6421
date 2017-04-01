@@ -6,7 +6,7 @@ import lexical.TokenType;
 import semantic.DuplicateDeclHandler;
 import semantic.expression.ExpressionContext;
 import semantic.symboltable.SymbolTable;
-import semantic.symboltable.SymbolTableEntry;
+import semantic.symboltable.entry.SymbolTableEntry;
 import semantic.symboltable.entry.*;
 import semantic.symboltable.type.*;
 import syntactic.Parser;
@@ -111,7 +111,7 @@ public class SymbolTableActionHandler extends ActionHandler {
         }
     }
 
-    private static SymbolTable getSymbolTableByName(String name) {
+    public static SymbolTable getSymbolTableByName(String name) {
         String tableNm = name + " table";
         if (!symbolTableList.isEmpty()) {
             for (SymbolTable table : symbolTableList) {
@@ -128,12 +128,10 @@ public class SymbolTableActionHandler extends ActionHandler {
     }
 
     private static void createFunction(SymbolTable currentTable) {
-        // create a new function table for the new function
-        SymbolTable functionTable = new SymbolTable(currentTable);
-        functionTable.setName(cacheFunction + " table");
+        // Note: when into this method, the current table is that function table
+
         // get the function entry from the current table
-        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.search(cacheFunction);
-        functionEntry.setScope(functionTable);
+        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
 
         // add parameters to the function table
         List<SymbolTableEntryType> paramTypeList = functionEntry.getParamTypeList();
@@ -142,14 +140,14 @@ public class SymbolTableActionHandler extends ActionHandler {
                 String name = cacheParamList.get(i);
                 SymbolTableEntryType type = paramTypeList.get(i);
                 ParameterEntry paramEntry = new ParameterEntry(name, type);
-                functionTable.insert(cacheParamList.get(i), paramEntry);
+                currentTable.insert(cacheParamList.get(i), paramEntry);
             }
         }
 
         // clear the parameters list
         cacheParamList.clear();
 
-        symContext.push(functionTable);
+//        symContext.push(functionTable);
     }
 
     private static void addFunctionParameter(SymbolTable currentTable) {
@@ -189,16 +187,26 @@ public class SymbolTableActionHandler extends ActionHandler {
             isSuccess = false;
         }
 
-        SymbolTableEntry entry;
-        if (freeFunction)
-            entry = new FunctionEntry(name, getType(cacheTypeToken), null);
-        else
-            entry = new MemberFunctionEntry(name, getType(cacheTypeToken), null);
+        // create a new function table for the new function
+        SymbolTable functionTable = new SymbolTable(currentTable);
+        functionTable.setName(name + " table");
 
+        SymbolTableEntry entry;
+        if (freeFunction) {
+            entry = new FunctionEntry(name, getType(cacheTypeToken), functionTable);
+        }
+        else {
+            entry = new MemberFunctionEntry(name, getType(cacheTypeToken), functionTable);
+        }
+
+        // insert the new entry to the current table
         currentTable.insert(name, entry);
 
         // cache the function name for adding parameter
         cacheFunction = name;
+
+        symContext.push(functionTable);
+
     }
 
     private static void createVariable(SymbolTable currentTable) {

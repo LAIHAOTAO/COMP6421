@@ -37,6 +37,12 @@ public class RegisterManager {
         throw new RuntimeException("You are run out of register ...");
     }
 
+    /**
+     * This method is used to detect the current register connected to the value is
+     * reversed or not. Since a lot of value depend on the stack pointer register or
+     * the frame pointer when they are initialized. This method can give this value a
+     * free register when they need to participate in some expression calculation.
+     */
     public Register getAvailableRegister(Register tmp) {
         if (tmp.reserved) {
             tmp = getAvailableRegister();

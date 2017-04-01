@@ -1,6 +1,7 @@
-package semantic.symboltable;
+package semantic.symboltable.entry;
 
 import common.Const;
+import semantic.symboltable.SymbolTable;
 import semantic.symboltable.type.SymbolTableEntryType;
 
 /**

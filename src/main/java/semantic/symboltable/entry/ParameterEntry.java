@@ -1,9 +1,5 @@
 package semantic.symboltable.entry;
 
-import semantic.symboltable.SymbolTableEntry;
-import semantic.symboltable.type.ClassType;
-import semantic.symboltable.type.FloatType;
-import semantic.symboltable.type.IntType;
 import semantic.symboltable.type.SymbolTableEntryType;
 
 /**

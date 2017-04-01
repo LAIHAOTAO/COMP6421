@@ -24,7 +24,7 @@ public class ClassType implements SymbolTableEntryType {
 
     @Override
     public SymbolTable getScope() {
-        return null;
+        return this.entry.getScope();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ExpressionContext {
             // if the stack is empty
             if (child instanceof Statement && currentFunction != null) {
                 // if child is a statement and now we are inside a function
-                // add the child variable to the current function
+                // then just add the child variable to the current function
                 currentFunction.addStatement((Statement) child);
             } else {
                 throw new RuntimeException("Something wrong here ...");

@@ -1,5 +1,8 @@
 package semantic.symboltable;
 
+import semantic.symboltable.entry.SymbolTableEntry;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -77,8 +80,8 @@ public class SymbolTable {
         return this.entries.keySet();
     }
 
-    public Set<SymbolTableEntry> valueSet() {
-        return this.valueSet();
+    public Collection<SymbolTableEntry> valueSet() {
+        return this.entries.values();
     }
 
     public SymbolTable getParent() {

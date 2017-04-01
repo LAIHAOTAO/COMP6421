@@ -3,7 +3,7 @@ package util;
 import common.Const;
 import semantic.symboltable.SymbolTable;
 import semantic.handler.SymbolTableActionHandler;
-import semantic.symboltable.SymbolTableEntry;
+import semantic.symboltable.entry.SymbolTableEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,15 +41,16 @@ public class SymbolTablePrinter {
 
         formatter.format("Table Name: %s,  Parent Table Name: %s\n", table.getName(), table.getParentName());
         formatter.format("--------------------------------------------------------------------------------------------------\n");
-        formatter.format("| %-15s | %-15s | %-40s | %-15s |\n", "name", "kind", "type", "link");
+        formatter.format("| %-15s | %-15s | %-30s | %-10s | %-10s |\n", "name", "kind", "type", "offset", "link");
         formatter.format("--------------------------------------------------------------------------------------------------\n");
 
         for (Map.Entry<String, SymbolTableEntry> entry : table.entrySet()) {
             SymbolTable scope = entry.getValue().getScope();
-            formatter.format("| %-15s | %-15s | %-40s | %-15s |\n",
+            formatter.format("| %-15s | %-15s | %-30s | %-10s | %-10s |\n",
                     entry.getValue().getName(),
                     entry.getValue().getKind(),
                     entry.getValue().getType().toString(),
+                    entry.getValue().getOffset(),
                     (scope != null) ? scope.getName() : "null"
             );
         }

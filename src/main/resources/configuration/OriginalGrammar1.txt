@@ -1,0 +1,49 @@
+prog -> classDecl prog | progBody
+classDecl -> CLASS ID LBP classBody
+classBody -> type ID classBodyPrime | RBP SEMICOLON 
+classBodyPrime -> classBodyVar | classBodyFunc
+classBodyVar -> varDeclArray classBody
+classBodyFunc -> LCP fParams RCP funcBody SEMICOLON classBodyFuncPrime
+classBodyFuncPrime -> type ID classBodyFunc | RBP SEMICOLON 
+progBody -> PROGRAM funcBody SEMICOLON funcDefs
+funcDefs -> type ID LCP fParams RCP funcBody SEMICOLON funcDefs | EPSILON
+funcBody -> LBP funcBodyVar
+funcBodyVar -> INT ID varDeclArray funcBodyVar | FLOAT ID varDeclArray funcBodyVar | ID funcBodyVarPrime | controlStat funcBodyStmt | RBP 
+funcBodyVarPrime -> ID varDeclArray funcBodyVar | indices variablePrime assignStat funcBodyStmt
+funcBodyStmt -> variable assignStat funcBodyStmt | controlStat funcBodyStmt | RBP
+varDeclArray -> arraySize varDeclArray | SEMICOLON
+controlStat -> IF LCP expr RCP THEN statBlock ELSE statBlock SEMICOLON | FOR LCP type ID assignOp expr SEMICOLON relExpr SEMICOLON variable assignExpr RCP statBlock SEMICOLON | GET LCP variable RCP SEMICOLON | PUT LCP expr RCP SEMICOLON | RETURN LCP expr RCP SEMICOLON
+assignStat -> assignExpr SEMICOLON
+assignExpr -> assignOp expr
+statBlock -> LBP statBlockStmts | variable assignStat | controlStat | EPSILON 
+statBlockStmts -> variable assignStat statBlockStmts | controlStat statBlockStmts | RBP 
+expr -> arithExpr exprPrime
+exprPrime -> relOp arithExpr exprPrime | EPSILON 
+relExpr -> arithExpr relOp arithExpr 
+arithExpr -> term arithExprPrime
+arithExprPrime -> addOp arithExpr | EPSILON 
+sign -> ADDITION | SUBTRACTION
+term -> factor termPrime
+termPrime -> multOp factor termPrime | EPSILON 
+factor -> factorIdNest | INT_NUM | FLOAT_NUM | LCP arithExpr RCP | NOT factor | sign factor
+factorIdNest -> ID factorIdNestPrime
+factorIdNestPrime -> indices secondFactorIdNest | LCP aParams RCP
+secondFactorIdNest -> DOT factorIdNest | EPSILON
+variable -> ID indices variablePrime
+variablePrime -> DOT variable | EPSILON 
+indices -> indice indices | EPSILON
+indice -> LSP arithExpr RSP
+arraySize -> LSP INT_NUM RSP
+type -> INT | FLOAT | ID
+fParams -> type ID fParamsArraySz | EPSILON
+fParamsArraySz -> arraySize fParamsArraySz | fParamsTailStar
+fParamsTailStar -> fParamsTail fParamsTailStar | EPSILON
+fParamsTail -> COMMA type ID arraySizeStar 
+arraySizeStar -> arraySize arraySizeStar | EPSILON
+aParams -> expr aParamsTailStar | EPSILON
+aParamsTailStar -> aParamsTail aParamsTailStar | EPSILON
+aParamsTail -> COMMA expr
+assignOp -> ASSIGNMENT
+relOp -> LT | LEQ | NEQ | EQ | GT | GEQ
+addOp -> ADDITION | SUBTRACTION | OR
+multOp -> MULTIPLICATION | DIVISION | AND

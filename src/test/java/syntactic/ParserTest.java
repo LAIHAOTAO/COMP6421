@@ -102,7 +102,7 @@ public class ParserTest {
 
         String startSymbol = "prog";
 
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar1.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),
@@ -138,7 +138,7 @@ public class ParserTest {
 
         String startSymbol = "prog";
 
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar1.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),

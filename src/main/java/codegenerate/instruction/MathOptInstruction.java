@@ -1,6 +1,7 @@
 package codegenerate.instruction;
 
 import codegenerate.Register;
+import semantic.value.RegisterValue;
 
 /**
  * Created by ERIC_LAI on 2017-03-28.
@@ -17,6 +18,13 @@ public class MathOptInstruction extends Instruction{
         this.dest = dest;
         this.first = first;
         this.second = second;
+    }
+
+    public MathOptInstruction(String op, RegisterValue dest, RegisterValue first, RegisterValue second) {
+        this.op = op;
+        this.dest = dest.getRegister();
+        this.first = first.getRegister();
+        this.second = second.getRegister();
     }
 
     @Override

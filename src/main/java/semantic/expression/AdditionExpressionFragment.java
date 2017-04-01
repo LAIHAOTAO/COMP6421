@@ -1,5 +1,7 @@
 package semantic.expression;
 
+import semantic.symboltable.type.SymbolTableEntryType;
+
 /**
  * Created by ERIC_LAI on 2017-03-27.
  */
@@ -7,6 +9,11 @@ public class AdditionExpressionFragment extends AbstractRelationAndMathExpressio
 
     public AdditionExpressionFragment() {
         super();
+    }
+
+    @Override
+    public SymbolTableEntryType getType() {
+        return first.getType();
     }
 
     @Override

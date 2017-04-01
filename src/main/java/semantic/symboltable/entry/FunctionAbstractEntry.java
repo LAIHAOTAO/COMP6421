@@ -2,7 +2,6 @@ package semantic.symboltable.entry;
 
 import semantic.Statement.Statement;
 import semantic.symboltable.SymbolTable;
-import semantic.symboltable.SymbolTableEntry;
 import semantic.symboltable.type.SymbolTableEntryType;
 
 import java.util.ArrayList;
@@ -57,5 +56,9 @@ public class FunctionAbstractEntry extends SymbolTableEntry {
 
     public void addStatement(Statement statement) {
         this.statementList.add(statement);
+    }
+
+    public List<Statement> getStatementList() {
+        return statementList;
     }
 }

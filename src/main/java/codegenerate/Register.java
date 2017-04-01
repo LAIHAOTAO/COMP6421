@@ -11,8 +11,8 @@ import java.util.Set;
 public enum  Register {
 
     ZERO("R0"),
-    R1,
-    R2,
+    STACK_POINTER("R1"),
+    FRAME_POINTER("R2"),
     R3,
     R4,
     R5,

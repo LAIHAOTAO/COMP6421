@@ -1,6 +1,8 @@
 package codegenerate.instruction;
 
 import codegenerate.Register;
+import semantic.value.RegisterValue;
+import semantic.value.StaticValue;
 
 /**
  * Created by ERIC_LAI on 2017-03-28.
@@ -10,6 +12,12 @@ public class LWInstruction extends Instruction {
     private final Register destAddr;
     private final Register value;
     private final int offset;
+
+    public LWInstruction(RegisterValue destVal, RegisterValue srcValue, StaticValue offset) {
+        this.destAddr = destVal.getRegister();
+        this.value = srcValue.getRegister();
+        this.offset = offset.intValue();
+    }
 
     public LWInstruction(Register destAddr, Register value, int offset) {
         this.destAddr = destAddr;

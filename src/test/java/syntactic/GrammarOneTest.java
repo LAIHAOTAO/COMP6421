@@ -1,20 +1,21 @@
 package syntactic;
 
 import common.Const;
+import lexical.LexicalScanner;
+import org.junit.Test;
 import semantic.ActionGrammarInjector;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * Created by ERIC_LAI on 2017-03-23.
+ * Created by ERIC_LAI on 2017-04-01.
  */
-public class ParserDriver {
+@SuppressWarnings("Duplicates")
+public class GrammarOneTest {
 
-    private ParserTable table;
-
-    public ParserDriver() throws IOException {
-
+    @Test
+    public void test() throws IOException {
         String startSymbol = "prog";
 
         // pure grammar
@@ -36,9 +37,13 @@ public class ParserDriver {
         }
 
         pureGenerator.processPureGrammar();
-        pureGenerator.getParseTable().printTable();
 
-        System.out.println("===================");
+//        pureGenerator.getParseTable().printTable();
+//
+//        System.out.println("===================");
+//        System.out.println();
+//        System.out.println();
+//        System.out.println();
 
         // action grammar
         GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/ActionGrammar.txt");
@@ -57,18 +62,28 @@ public class ParserDriver {
             }
         }
 
-
-
         // update the grammar
         ActionGrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
         // end of update grammar
 
-        this.table = pureGenerator.getParseTable();
+//        pureGenerator.getParseTable().printTable();
 
-        this.table.printTable();
-    }
 
-    public ParserTable getTable() {
-        return table;
+        LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/MigrationTest.txt");
+
+        ParserDriver parserDriver;
+        try {
+
+
+            Parser.turnOnDebug = true;
+
+            Parser.firstParse(scanner, pureGenerator.getParseTable());
+            boolean isSuccess = Parser.secondParse(scanner, pureGenerator.getParseTable());
+
+            System.out.println("parsing result: " + ((isSuccess) ? "success" : "fail"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

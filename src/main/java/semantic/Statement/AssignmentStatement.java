@@ -1,15 +1,15 @@
 package semantic.Statement;
 
+import codegenerate.CodeGenerateContext;
 import semantic.expression.ExpressionElement;
-import semantic.expression.TypedExpressionElement;
 import semantic.expression.VariableElementFragment;
-import semantic.symboltable.type.SymbolTableEntryType;
 import semantic.value.Value;
+import semantic.value.VoidValue;
 
 /**
  * Created by ERIC_LAI on 2017-03-24.
  */
-public class AssignmentStatement extends TypedExpressionElement implements Statement{
+public class AssignmentStatement extends ExpressionElement implements Statement{
 
     public enum State {
         WAIT_LHS,
@@ -27,17 +27,10 @@ public class AssignmentStatement extends TypedExpressionElement implements State
         this.currentState = State.WAIT_LHS;
     }
 
-    @Override
-    public SymbolTableEntryType getType() {
-
-        // todo
-        return null;
-    }
 
     @Override
     public Value getValue() {
-        // todo
-        return null;
+        return VoidValue.get();
     }
 
     @Override
@@ -57,7 +50,7 @@ public class AssignmentStatement extends TypedExpressionElement implements State
     public void accept(ExpressionElement expr) {
         if (currentState == State.LHS) {
             lhs = expr.getValue();
-            currentState = State.WAIT_RHS;
+            currentState = State.RHS;
         } else if (currentState == State.RHS) {
             rhs = expr.getValue();
             currentState = State.DONE;
@@ -66,5 +59,10 @@ public class AssignmentStatement extends TypedExpressionElement implements State
         } else {
             throw new RuntimeException("Unexpected " + expr + " while in state " + currentState);
         }
+    }
+
+    @Override
+    public String generateCode(CodeGenerateContext c) {
+        return null;
     }
 }

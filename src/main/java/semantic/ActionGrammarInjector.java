@@ -27,10 +27,14 @@ public class ActionGrammarInjector {
             }
         }
 
+//        System.out.println();
 //        System.out.println("All NonTerminal rule, total " + map.size());
 //        for (String key : map.keySet()) {
 //            System.out.println(map.get(key).toDetailString());
 //        }
+//        System.out.println("End of all NonTerminal rule");
+//        System.out.println();
+
 
         // get parse table key set
         ParserTable table = generator.getParseTable();
@@ -38,14 +42,18 @@ public class ActionGrammarInjector {
         Set<String> tableKeySet = generator.getParseTable().keySet();
 
         for (String mapKey : map.keySet()) {
-            // get the list of lefthand side contains the rule need to be replace
+            // get the list of left hand side contains the rule need to be replaced
             List<String> needReplace = getNeedReplaceKey(tableKeySet, mapKey);
 
             if (!needReplace.isEmpty()) {
                 // loop all key in the replace list
                 for (String needReplaceKey : needReplace) {
 
-                    // get table the righthand side rule with the current key
+                    // ********************************************************************************
+                    // !!! Attention, need to handle there is only epsilon in the right hand side !!!
+                    // ********************************************************************************
+
+                    // get table the right hand side rule with the current key
                     LinkedList<GrammarRule> tableRuleRightSide = entries.get(needReplaceKey);
 
                     // get the new data from the map which uses to replace the old data
@@ -71,7 +79,7 @@ public class ActionGrammarInjector {
 //                    }
                     // end of debug
 
-                    // use pdrs to replace the rule in tableRuleRightSide, according to their first rule
+                    // use pdrs to replace the rule in tableRuleRightSide
                     for (ProductionRule pd : pdrs) {
                         if (match(tableRuleRightSide, pd)) {
 

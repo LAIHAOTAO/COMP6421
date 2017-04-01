@@ -16,6 +16,8 @@ public class SemanticActionHandler extends ActionHandler {
 
     public static void process(String action, Token token) {
 
+        System.out.println(action + ": " + token.getValue());
+
         switch (action) {
 
             case "sem_FinishVariable":
