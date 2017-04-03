@@ -73,5 +73,9 @@ public abstract class SymbolTableEntry {
         return calculateSize();
     }
 
+    @Override
+    public String toString() {
+        return type.toString() + ": " + name + ": " + offset;
+    }
 
 }

@@ -13,6 +13,7 @@ public class CodeGenerateContext {
     public RegisterManager registerManager;
     public LinkedList<Instruction> instructions;
 
+
     public CodeGenerateContext() {
         labelGenerator = LabelGenerator.instance;
         registerManager = RegisterManager.geRegisterManager();
@@ -22,4 +23,5 @@ public class CodeGenerateContext {
     public void appendInstruction(Instruction i) {
         this.instructions.add(i);
     }
+
 }

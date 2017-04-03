@@ -14,7 +14,6 @@ public class MathValue extends DynamicValue {
     private final Value a;
     private final Value b;
     private MathOpt operator;
-    private CodeGenerateContext codeContext;
 
     public MathValue(MathOpt operator, Value first, Value second) {
         this.operator = operator;
@@ -23,21 +22,27 @@ public class MathValue extends DynamicValue {
     }
 
     @Override
-    public Value getUsedValue(CodeGenerateContext context) {
+    public Value getUsedValue(CodeGenerateContext c) {
 
-        this.codeContext = context;
-        Value tmpA = a.getUsedValue(context);
-        Value tmpB = b.getUsedValue(context);
+        Value tmpA = a.getUsedValue(c);
+        Value tmpB = b.getUsedValue(c);
         Value res = null;
 
         if (tmpA instanceof StaticValue && tmpB instanceof StaticNumValue) {
+
             res = subGetUsedValue((StaticValue) tmpA, (StaticValue) tmpB);
+
         } else if (tmpA instanceof StaticValue && tmpB instanceof RegisterValue) {
-            res = subGetUsedValue((StaticValue) tmpA, (RegisterValue) tmpB);
+
+            res = subGetUsedValue((StaticValue) tmpA, (RegisterValue) tmpB, c);
+
         } else if (tmpA instanceof RegisterValue && tmpB instanceof StaticValue) {
-            res = subGetUsedValue((RegisterValue) tmpA, (StaticValue) tmpB);
+
+            res = subGetUsedValue((RegisterValue) tmpA, (StaticValue) tmpB, c);
+
         } else if (tmpA instanceof RegisterValue && tmpB instanceof RegisterValue) {
-            res = subGetUsedValue((RegisterValue) tmpA, (RegisterValue) tmpB);
+
+            res = subGetUsedValue((RegisterValue) tmpA, (RegisterValue) tmpB, c);
         }
 
         if (res == null)
@@ -58,26 +63,26 @@ public class MathValue extends DynamicValue {
         return new StaticNumValue(this.operator.operate(tmpA.intValue(), tmpB.intValue()));
     }
 
-    private Value subGetUsedValue(StaticValue tmpA, RegisterValue tmpB) {
+    private Value subGetUsedValue(StaticValue tmpA, RegisterValue tmpB, CodeGenerateContext c) {
         // if the operation respect commutative law
         if (this.operator.commulative) {
-            return subGetUsedValue(tmpB, tmpA);
+            return subGetUsedValue(tmpB, tmpA, c);
         }
         // otherwise case the first parameter to RegisterValue
         else {
-            return subGetUsedValue(tmpA.getRegisterValue(this.codeContext), tmpB);
+            return subGetUsedValue(tmpA.getRegisterValue(c), tmpB, c);
         }
     }
 
-    private Value subGetUsedValue(RegisterValue tmpA, StaticValue tmpB) {
+    private Value subGetUsedValue(RegisterValue tmpA, StaticValue tmpB, CodeGenerateContext c) {
         // this case we need to use immediate operation
 
         // apply an free register to stored the result
         Register reg = tmpA.getRegister();
         // make sure the reg is not occupied by others
-        Register tmp = this.codeContext.registerManager.getAvailableRegister(reg);
+        Register tmp = c.registerManager.getAvailableRegister(reg);
 
-        this.codeContext.appendInstruction(
+        c.appendInstruction(
                 new MathOptImmInstruction(
                         this.operator.immediateOpcode,
                         tmp,
@@ -89,14 +94,15 @@ public class MathValue extends DynamicValue {
         return new RegisterValue(tmp);
     }
 
-    private Value subGetUsedValue(RegisterValue tmpA, RegisterValue tmpB) {
+    private Value subGetUsedValue(RegisterValue tmpA, RegisterValue tmpB, CodeGenerateContext c) {
         Register regA = tmpA.getRegister();
         Register regB = tmpB.getRegister();
 
         Register tmp;
         boolean free = false;
+
         if (regA.reserved) {
-            tmp = this.codeContext.registerManager.getAvailableRegister(regB);
+            tmp = c.registerManager.getAvailableRegister(regB);
         } else {
             tmp = regA;
             if (!regB.reserved) {
@@ -104,10 +110,10 @@ public class MathValue extends DynamicValue {
             }
         }
 
-        this.codeContext.appendInstruction(new MathOptInstruction(operator.opcode, tmp, regA, regB));
+        c.appendInstruction(new MathOptInstruction(operator.opcode, tmp, regA, regB));
 
         if (free) {
-            this.codeContext.registerManager.freeRegister(regB);
+            c.registerManager.freeRegister(regB);
         }
 
         return new RegisterValue(tmp);

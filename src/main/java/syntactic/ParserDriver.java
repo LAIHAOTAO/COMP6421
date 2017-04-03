@@ -36,9 +36,8 @@ public class ParserDriver {
         }
 
         pureGenerator.processPureGrammar();
-        pureGenerator.getParseTable().printTable();
-
-        System.out.println("===================");
+//        pureGenerator.getParseTable().printTable();
+//        System.out.println("===================");
 
         // action grammar
         GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/ActionGrammar.txt");
@@ -65,7 +64,7 @@ public class ParserDriver {
 
         this.table = pureGenerator.getParseTable();
 
-        this.table.printTable();
+//        this.table.printTable();
     }
 
     public ParserTable getTable() {

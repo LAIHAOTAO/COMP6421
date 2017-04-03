@@ -1,8 +1,6 @@
 package codegenerate;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by ERIC_LAI on 2017-03-28.
@@ -18,11 +16,11 @@ public class RegisterManager {
         return instance;
     }
 
-    private Stack<Register> registers;
+    private Queue<Register> registers;
     private Set<Register> track;
 
     private RegisterManager() {
-        this.registers = new Stack<>();
+        this.registers = new ArrayDeque<>();
         this.track = new HashSet<>();
         this.registers.addAll(Register.freeRegisters);
     }
@@ -30,7 +28,7 @@ public class RegisterManager {
     public Register getAvailableRegister() {
         Register tmp;
         if (!registers.isEmpty()) {
-            tmp = registers.pop();
+            tmp = registers.remove();
             track.remove(tmp);
             return tmp;
         }
@@ -51,6 +49,6 @@ public class RegisterManager {
     }
 
     public void freeRegister(Register reg) {
-        this.registers.push(reg);
+        this.registers.add(reg);
     }
 }

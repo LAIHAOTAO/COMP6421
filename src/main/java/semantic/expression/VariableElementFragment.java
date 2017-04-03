@@ -3,14 +3,12 @@ package semantic.expression;
 import codegenerate.MathOpt;
 import codegenerate.Register;
 import semantic.handler.ActionHandler;
+import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.ParameterEntry;
 import semantic.symboltable.entry.SymbolTableEntry;
 import semantic.symboltable.entry.VariableEntry;
-import semantic.symboltable.type.ArrayType;
-import semantic.symboltable.type.FloatType;
-import semantic.symboltable.type.IntType;
-import semantic.symboltable.type.SymbolTableEntryType;
+import semantic.symboltable.type.*;
 import semantic.value.*;
 
 /**
@@ -21,6 +19,8 @@ public class VariableElementFragment extends TypedExpressionElement {
     private String name;
 
     private SymbolTable currentScope;
+    private SymbolTable enclosingScope;
+
     private SymbolTableEntryType currentType;
 
     private boolean isReference;
@@ -36,6 +36,7 @@ public class VariableElementFragment extends TypedExpressionElement {
     public VariableElementFragment(String id, SymbolTable curScope) {
         this.name = id;
         this.currentScope = curScope;
+        this.enclosingScope = curScope;
         this.currentType = null;
         this.functionCall = false;
 
@@ -46,8 +47,8 @@ public class VariableElementFragment extends TypedExpressionElement {
             // means we are in a member function
             SymbolTable outerClass = curScope.getParent();
             if (outerClass.exist(id) && !curScope.exist(id)) {
-//                init(getEntry());
-//                pushID(id);
+                //                init(getEntry());
+                //                pushID(id);
             }
 
         } else {
@@ -77,12 +78,13 @@ public class VariableElementFragment extends TypedExpressionElement {
 
     @Override
     public void pushID(String varName) {
-        SymbolTableEntry e = getEntry(varName);
+        // if access a member variable the program will come here
+        // get the class structure and calculate the relative offset
 
+        SymbolTableEntry e = getEntry(varName);
         currentType = e.getType();
         currentScope = currentType.getScope();
         offset = new MathValue(MathOpt.ADD, offset, new StaticNumValue(e.getOffset()));
-
         isReference = false;
     }
 
@@ -96,6 +98,8 @@ public class VariableElementFragment extends TypedExpressionElement {
 
         } else if (expr instanceof IndexingExpressionFragment) {
 
+        } else {
+            super.accept(expr);
         }
     }
 
@@ -105,11 +109,9 @@ public class VariableElementFragment extends TypedExpressionElement {
             @Override
             protected Value get() {
                 return new MathValue(
-                        // since we use the memory from the highest address
-                        // so we need to do subtraction here
                         MathOpt.SUBTRACT,
                         new StaticNumValue(entry.getOffset()),
-                        new StaticNumValue(currentScope.getSize())
+                        new StaticNumValue(enclosingScope.getSize())
                 );
             }
         };
@@ -119,10 +121,13 @@ public class VariableElementFragment extends TypedExpressionElement {
                 entry.getType() instanceof FloatType) {
 
             this.isReference = false;
-            this.baseAddr = new RegisterValue(Register.STACK_POINTER);
+            this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
             this.offset = offsetValue;
 
         } else if (entry instanceof ParameterEntry) {
+
+            this.isReference = true;
+            this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
 
         } else {
             throw new RuntimeException("Something wrong with that entry in VariableElementFragment");
@@ -144,15 +149,18 @@ public class VariableElementFragment extends TypedExpressionElement {
         SymbolTableEntry e;
 
         if (!"global table".equals(currentScope.getParentName())) {
-            // if we are in a member function, search the fields of that class
+            // if current scope's parent is global table means we are in a
+            // member function, search the fields of that class
             e = currentScope.memberSearch(id);
         } else {
             // if we are in a free function
             e = currentScope.search(id);
         }
 
+        // otherwise this id maybe a free function name (if it is a member function name, the class name should
+        // be met first)
         if (e == null) {
-            throw new RuntimeException("Cannot find entry with " + id + "in current scope " + currentScope.getName());
+            throw new RuntimeException("Cannot find entry with " + id + " in current scope " + currentScope.getName());
         }
 
         return e;

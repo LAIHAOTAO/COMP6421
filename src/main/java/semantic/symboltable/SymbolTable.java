@@ -52,11 +52,7 @@ public class SymbolTable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (String key : entries.keySet()) {
-            sb.append(key).append(" -> ").append(entries.get(key).toString()).append('\n');
-        }
-        return sb.toString();
+        return this.name;
     }
 
     public String getName() {

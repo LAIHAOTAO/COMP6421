@@ -23,6 +23,11 @@ public class Const {
 
     public static final int REVERSED_REG_NUM = 3;
 
+    public static final String FUNC_RETURN_ADDR = "@returnAddr";
+
+    public static final String PREV_FRAME_POINTER = "@prevFp";
+
+
     public enum ErrorLevel {
         Lexical, Syntactic, Semantic;
 

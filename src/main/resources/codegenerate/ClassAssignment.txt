@@ -1,0 +1,14 @@
+class MyClass {
+      int insideClass1;
+      int insideClass2;
+  };
+
+program {
+    int sum;
+    MyClass c;
+
+    c.insideClass1 = 1;
+    c.insideClass2 = 2;
+
+    sum = c.insideClass1 + c.insideClass2;
+};

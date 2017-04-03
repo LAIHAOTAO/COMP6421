@@ -9,7 +9,9 @@ import codegenerate.instruction.LWInstruction;
  */
 public class AbsoluteAddressValue extends DynamicValue {
 
+    // represent the current address value's base address
     private RegisterValue baseAddr;
+    // represent the current address value's offset from the base address
     private StaticValue offset;
 
     public AbsoluteAddressValue(RegisterValue baseAddr, StaticValue offset) {
@@ -36,5 +38,13 @@ public class AbsoluteAddressValue extends DynamicValue {
     @Override
     public RegisterValue getRegisterValue(CodeGenerateContext context) {
         return (RegisterValue) getUsedValue(context);
+    }
+
+    public RegisterValue getBaseAddr() {
+        return baseAddr;
+    }
+
+    public StaticValue getOffset() {
+        return offset;
     }
 }

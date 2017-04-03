@@ -15,11 +15,14 @@ public class FunctionAbstractEntry extends SymbolTableEntry {
 
     private List<SymbolTableEntryType> paramTypeList;
     private List<Statement> statementList;
+    private final String label;
 
     public FunctionAbstractEntry(String name, Kind kind, SymbolTableEntryType type, SymbolTable scope) {
         super(name, kind, type, scope);
         paramTypeList = new ArrayList<>();
         statementList = new LinkedList<>();
+        this.label = name + Integer.toString(hashCode());
+
     }
 
     @Override
@@ -60,5 +63,9 @@ public class FunctionAbstractEntry extends SymbolTableEntry {
 
     public List<Statement> getStatementList() {
         return statementList;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

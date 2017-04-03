@@ -1,6 +1,7 @@
 package semantic.handler;
 
 
+import common.Const;
 import lexical.Token;
 import lexical.TokenType;
 import semantic.DuplicateDeclHandler;
@@ -130,7 +131,7 @@ public class SymbolTableActionHandler extends ActionHandler {
     private static void createFunction(SymbolTable currentTable) {
         // Note: when into this method, the current table is that function table
 
-        // get the function entry from the current table
+        // get that function entry from the current table
         FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
 
         // add parameters to the function table
@@ -147,7 +148,21 @@ public class SymbolTableActionHandler extends ActionHandler {
         // clear the parameters list
         cacheParamList.clear();
 
-//        symContext.push(functionTable);
+        // *****************************************************************************
+        // following code add for implement the runtime stack
+        //      the idea is add two variable entries into the function table:
+        //          1. for store the return address
+        //          2. for store previous frame pointer
+        // *****************************************************************************
+
+        VariableEntry returnAddr = new VariableEntry(Const.FUNC_RETURN_ADDR, functionEntry.getType(), currentTable);
+        VariableEntry prevFp = new VariableEntry(Const.PREV_FRAME_POINTER, new IntType(), currentTable);
+
+        currentTable.insert(returnAddr.getName(), returnAddr);
+        currentTable.insert(prevFp.getName(), prevFp);
+
+        // *****************************************************************************
+
     }
 
     private static void addFunctionParameter(SymbolTable currentTable) {
@@ -221,8 +236,7 @@ public class SymbolTableActionHandler extends ActionHandler {
         }
 
         SymbolTableEntryType type = getType(cacheTypeToken);
-        SymbolTableEntry entry;
-        entry = new VariableEntry(name, type, null);
+        SymbolTableEntry entry = new VariableEntry(name, type, null);
         entry.setType(type);
 
         // check this variable is an array or not
@@ -303,7 +317,8 @@ public class SymbolTableActionHandler extends ActionHandler {
             case FLOAT:
                 return new FloatType();
             case ID:
-                return new ClassType(cacheType.getValue());
+                ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(cacheType.getValue());
+                return new ClassType(classEntry);
         }
         throw new RuntimeException("No such type defined in the grammar");
     }

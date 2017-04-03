@@ -8,8 +8,6 @@ public abstract class Instruction {
     protected String label;
     protected String comment;
 
-
-
     public Instruction() {
         this.label = "";
         this.comment = "";
@@ -18,14 +16,21 @@ public abstract class Instruction {
     protected abstract String generateAssemblyCode();
 
     public String getAssemblyCode() {
-        return this.label + "\t" + getAssemblyCode() + "%\t" + this.comment;
+        return this.label + "\t" + generateAssemblyCode() + "\t% " + this.comment;
     }
 
-    public void setLabel(String label) {
+    public Instruction setLabel(String label) {
         this.label = label;
+        return this;
     }
 
-    public void setComment(String comment) {
+    public Instruction setComment(String comment) {
         this.comment = comment;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return getAssemblyCode();
     }
 }

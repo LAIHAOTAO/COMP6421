@@ -10,11 +10,10 @@ import java.util.Objects;
  */
 public class ClassType implements SymbolTableEntryType {
 
-    private final String name;
     private ClassEntry entry;
 
-    public ClassType(String name) {
-        this.name = name;
+    public ClassType(ClassEntry entry) {
+        this.entry = entry;
     }
 
     @Override
@@ -29,20 +28,20 @@ public class ClassType implements SymbolTableEntryType {
 
     @Override
     public String toString() {
-        return name;
+        return entry.getName();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ClassType) {
             ClassType other = (ClassType) obj;
-            return Objects.equals(this.name, other.getName());
+            return Objects.equals(entry.getName(), other.getName());
         }
         return false;
     }
 
     public String getName() {
-        return name;
+        return entry.getName();
     }
 
     public void setEntry(ClassEntry entry) {

@@ -1,5 +1,5 @@
 prog -> classDecl_list progBody
-classDecl -> class ID sym_CreateClassScope LBP varDeclFunctDef_list RBP SEMICOLON sym_EndScope
+classDecl -> CLASS ID sym_CreateClassScope LBP varDeclFunctDef_list RBP SEMICOLON sym_EndScope
 progBody -> PROGRAM sym_CreateProgram funcBody SEMICOLON funcDef_list
 funcDef -> type sym_StoreType ID sym_StoreId LCP sym_StartFunction fParams RCP sym_CreateFunction funcBody SEMICOLON
 funcBody -> LBP funcBody_ RBP sym_EndScope

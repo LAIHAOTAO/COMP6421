@@ -11,8 +11,8 @@ public class SWInstruction extends Instruction{
     private final Register value;
     private final int offset;
 
-    public SWInstruction(Register destAddr, Register value, int offset) {
-        this.destAddr = destAddr;
+    public SWInstruction(int offset, Register refAddr, Register value) {
+        this.destAddr = refAddr;
         this.value = value;
         this.offset = offset;
     }

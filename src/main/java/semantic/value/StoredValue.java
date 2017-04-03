@@ -20,15 +20,15 @@ public class StoredValue extends DynamicValue {
 
     @Override
     public Value getUsedValue(CodeGenerateContext context) {
-        return geAbsAddress(context).getUsedValue(context);
+        return getAbsAddress(context).getUsedValue(context);
     }
 
     @Override
     public RegisterValue getRegisterValue(CodeGenerateContext context) {
-        return geAbsAddress(context).getRegisterValue(context);
+        return getAbsAddress(context).getRegisterValue(context);
     }
 
-    private AbsoluteAddressValue geAbsAddress(CodeGenerateContext context) {
+    public AbsoluteAddressValue getAbsAddress(CodeGenerateContext context) {
         Value usedOffset = this.offset.getUsedValue(context);
         RegisterValue baseAddrRegVal = this.baseAddr.getRegisterValue(context);
 
@@ -41,7 +41,8 @@ public class StoredValue extends DynamicValue {
 
             RegisterValue regVal = new RegisterValue(reg);
             context.appendInstruction(new MathOptInstruction(
-                    MathOpt.ADD.opcode, regVal, baseAddrRegVal, (RegisterValue) usedOffset)
+                    // get absolute address using frame pointer as reference
+                    MathOpt.SUBTRACT.opcode, regVal, baseAddrRegVal, (RegisterValue) usedOffset)
             );
 
             // release the register when this value is stored

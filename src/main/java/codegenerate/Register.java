@@ -13,7 +13,7 @@ public enum  Register {
     ZERO("R0"),
     STACK_POINTER("R1"),
     FRAME_POINTER("R2"),
-    R3,
+    RETURN("R3"),
     R4,
     R5,
     R6,
@@ -24,8 +24,8 @@ public enum  Register {
     R11,
     R12,
     R13,
-    RETURN("R14"),
-    PC("R15"),
+    R14,
+    R15,
 
     ;
 
