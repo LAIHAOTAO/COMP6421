@@ -2,6 +2,7 @@ package semantic.handler;
 
 import lexical.Token;
 import semantic.Statement.AssignmentStatement;
+import semantic.Statement.ReturnStatement;
 import semantic.expression.*;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.FunctionEntry;
@@ -104,9 +105,11 @@ public class SemanticActionHandler extends ActionHandler {
                 if (skipFunctionCall) break;
                 else exprContext.push(new FunctionCallExpressFragment(token.getValue(), symContext.peek()));
 //                System.out.println("call function: " + token.getValue());
+                break;
 
             case "sem_StartReturnStatement":
-
+                exprContext.push(new ReturnStatement());
+                break;
             case "sem_StartGetStatement":
             case "sem_StartPutStatement":
 

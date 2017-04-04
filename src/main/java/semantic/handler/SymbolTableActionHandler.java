@@ -155,7 +155,7 @@ public class SymbolTableActionHandler extends ActionHandler {
         //          2. for store previous frame pointer
         // *****************************************************************************
 
-        VariableEntry returnAddr = new VariableEntry(Const.FUNC_RETURN_ADDR, functionEntry.getType(), currentTable);
+        VariableEntry returnAddr = new VariableEntry(Const.FUNC_RETURN_ADDR, new IntType(), currentTable);
         VariableEntry prevFp = new VariableEntry(Const.PREV_FRAME_POINTER, new IntType(), currentTable);
 
         currentTable.insert(returnAddr.getName(), returnAddr);
@@ -167,7 +167,7 @@ public class SymbolTableActionHandler extends ActionHandler {
 
     private static void addFunctionParameter(SymbolTable currentTable) {
         // get the function entry
-        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.search(cacheFunction);
+        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
         // get the temporary type of the parameter
         SymbolTableEntryType type = getType(cacheTypeToken);
         ArrayType type1;

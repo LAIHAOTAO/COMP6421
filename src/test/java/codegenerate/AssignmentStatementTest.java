@@ -70,7 +70,7 @@ public class AssignmentStatementTest {
         try {
 
             parserDriver = new ParserDriver();
-            Parser.turnOnDebug = false;
+            Parser.turnOnDebug = true;
 
             Parser.firstParse(scanner, parserDriver.getTable());
             boolean isSuccess = Parser.secondParse(scanner, parserDriver.getTable());

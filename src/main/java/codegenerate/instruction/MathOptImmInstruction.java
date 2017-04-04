@@ -30,6 +30,6 @@ public class MathOptImmInstruction extends Instruction{
     protected String generateAssemblyCode() {
         // according to the moon doc
         //   math operation: opt_name  Ri, Rj, Rk => Ri <-- Rj opt_name Rk
-        return op + '\t' + dest.alias + ", " + src.alias + ", " + k;
+        return op + "\t" + dest.alias + ", " + src.alias + ", " + k;
     }
 }

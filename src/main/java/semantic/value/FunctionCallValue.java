@@ -37,7 +37,7 @@ public class FunctionCallValue extends DynamicValue implements Value {
             TypedExpressionElement expr = expressions.get(i);
             SymbolTableEntryType type = paramList.get(i);
             if (!expr.getType().equals(type)) {
-                throw new RuntimeException("the " + (i + 1) + " arameter type expected " + type
+                throw new RuntimeException("the " + (i + 1) + " parameter type expected " + type
                         + ", but found " + expr.getType());
             }
             parameters.add(expr.getValue());
@@ -50,25 +50,30 @@ public class FunctionCallValue extends DynamicValue implements Value {
     @Override
     public Value getUsedValue(CodeGenerateContext context) {
 
+        // the first parameter should be one word below stack pointer so
+        // initialize it with -4
+        int paramsOffset = -4;
         // add parameters in reversed order
-        int offset = 0;
         for (int i = parameters.size() - 1; i >= 0; i--) {
             Register reg = parameters.get(i).getRegisterValue(context).getRegister();
-            context.appendInstruction(new SWInstruction(offset, Register.STACK_POINTER, reg)
+            context.appendInstruction(new SWInstruction(paramsOffset, Register.STACK_POINTER, reg)
                     .setComment("add parameter"));
             // pass value or pass reference, the offset should always 4
-            offset -= 4;
+            paramsOffset -= 4;
         }
 
-        // update the frame pointer, two words below the parameter data
+        // store and update the frame pointer
+        context.appendInstruction(new SWInstruction(
+                paramsOffset - 4, Register.STACK_POINTER, Register.FRAME_POINTER
+        ).setComment("store the previous frame pointer"));
         context.appendInstruction(new MathOptImmInstruction(
-                MathOpt.ADD.immediateOpcode, Register.FRAME_POINTER, Register.FRAME_POINTER, offset - 12
+                MathOpt.ADD.immediateOpcode, Register.FRAME_POINTER, Register.STACK_POINTER, paramsOffset - 4
         ).setComment("update the frame pointer"));
 
         // update the stack pointer to the new function
-        offset -= scopeSize;
+        int varOffset = scopeSize - (Math.abs(paramsOffset - 4) + 8);
         context.appendInstruction(new MathOptImmInstruction(
-                MathOpt.ADD.immediateOpcode, Register.STACK_POINTER, Register.STACK_POINTER, offset
+                MathOpt.ADD.immediateOpcode, Register.STACK_POINTER, Register.FRAME_POINTER, varOffset
         ).setComment("update the stack pointer"));
 
         // call jump and link instruction

@@ -8,7 +8,7 @@ varDeclFunctDef_tail -> LCP sym_StartMemberFunction fParams RCP sym_CreateFuncti
 indiceIdnestList_tail -> DOT ID sem_PushVariableName indiceIdnestList_tail | LSP arithExpr RSP indiceIdnestList_tail | EPSILON sem_FinishVariable
 varDeclStatement_tail -> sym_StoreType ID sym_StoreId arraySize_list SEMICOLON sym_CreateVariable funcBody_ | sem_StartAssignmentStatment sem_PushVariableName indiceIdnestList_tail assignOp expr SEMICOLON statement_list
 funcBody_ -> typeNumeric sym_StoreType ID sym_StoreId arraySize_list SEMICOLON sym_CreateVariable funcBody_ | ID varDeclStatement_tail | restOfStatment statement_list | EPSILON
-statement -> assignmentStatment | sem_StartBlock restOfStatment sem_EndBlock
+statement -> assignmentStatment | restOfStatment
 assignmentStatment -> sem_StartAssignmentStatment variable_ assignOp expr SEMICOLON
 restOfStatment -> FOR sem_StartForStatement LCP type sym_StoreType sem_StartAssignmentStatment ID sym_StoreId sym_CreateVariable sem_PushVariableName sem_FinishVariable assignOp expr SEMICOLON relExpr SEMICOLON sem_StartAssignmentStatment assignStat RCP statBlock SEMICOLON | IF sem_StartIfStatement LCP expr RCP THEN statBlock ELSE statBlock SEMICOLON | GET sem_StartGetStatement LCP variable_ RCP SEMICOLON | PUT sem_StartPutStatement LCP expr RCP SEMICOLON | RETURN sem_StartReturnStatement LCP expr RCP SEMICOLON
 assignStat -> variable_ assignOp expr

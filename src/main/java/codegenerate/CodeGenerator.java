@@ -15,7 +15,8 @@ public class CodeGenerator {
 
     private boolean debug = false;
 
-    public CodeGenerator() {}
+    public CodeGenerator() {
+    }
 
     public void generate() {
 
@@ -65,7 +66,7 @@ public class CodeGenerator {
         context.appendInstruction(new MathOptImmInstruction(
                 MathOpt.SUBTRACT.immediateOpcode,
                 Register.STACK_POINTER,
-                Register.ZERO,
+                Register.STACK_POINTER,
                 programEntry.getSize()
         ).setComment("set the stack pointer to the top position of the stack"));
 
@@ -88,15 +89,29 @@ public class CodeGenerator {
         CodeGenerateContext context = new CodeGenerateContext();
 
         // store the return address
-        int offset = entry.getScope().search(Const.FUNC_RETURN_ADDR).getOffset() - entry.getScope().getSize();
-        context.appendInstruction(new SWInstruction(offset, Register.FRAME_POINTER, Register.RETURN)
+        context.appendInstruction(new SWInstruction(4, Register.FRAME_POINTER, Register.RETURN)
                 .setComment("store return address").setLabel(entry.getLabel()));
 
         for (Statement statement : entry.getStatementList()) {
             statement.generateCode(context);
         }
 
+        // get the return address
+        Register tmp = context.registerManager.getAvailableRegister();
+        context.appendInstruction(new LWInstruction(tmp, Register.FRAME_POINTER, 4)
+                .setComment("get return address"));
+
         // reset the stack pointer and frame pointer
+        context.appendInstruction(new LWInstruction(Register.FRAME_POINTER, Register.FRAME_POINTER, 0)
+                .setComment("load the previous frame pointer address"));
+        context.appendInstruction(new MathOptImmInstruction(
+                MathOpt.ADD.immediateOpcode, Register.STACK_POINTER,
+                Register.STACK_POINTER, entry.getScope().getSize())
+                .setComment("reset the stack pointer"));
+
+        // jump back to the calling place
+        context.appendInstruction(new JumpAndLinkInstruction(tmp));
+        context.registerManager.freeRegister(tmp);
 
         // output all instructions
         for (Instruction instruction : context.instructions) {
