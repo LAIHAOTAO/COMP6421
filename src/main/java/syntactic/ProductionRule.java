@@ -1,5 +1,7 @@
 package syntactic;
 
+import exception.CompilerException;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -60,7 +62,7 @@ public class ProductionRule {
         } else if (this.content.size() == n) {
             this.content = EpsilonRule.getEpsilonList();
         } else {
-            throw new RuntimeException("ProductionRule, cannot remove more than " + n + " " +
+            throw new CompilerException("ProductionRule, cannot remove more than " + n + " " +
                     "element," + "since the size of the content is " + this.content.size());
         }
     }

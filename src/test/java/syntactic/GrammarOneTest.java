@@ -75,7 +75,7 @@ public class GrammarOneTest {
         try {
 
 
-            Parser.turnOnDebug = true;
+            Parser.turnOnDebug();
 
             Parser.firstParse(scanner, pureGenerator.getParseTable());
             boolean isSuccess = Parser.secondParse(scanner, pureGenerator.getParseTable());

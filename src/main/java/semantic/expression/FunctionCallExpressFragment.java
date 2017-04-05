@@ -1,5 +1,6 @@
 package semantic.expression;
 
+import exception.CompilerException;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.FunctionAbstractEntry;
 import semantic.symboltable.entry.FunctionEntry;
@@ -46,7 +47,7 @@ public class FunctionCallExpressFragment extends TypedExpressionElement {
         if (entry instanceof FunctionAbstractEntry) {
             return entry.getType();
         } else {
-            throw new RuntimeException("Cannot find the function with name " + id);
+            throw new CompilerException("Cannot find the function with name " + id);
         }
     }
 
@@ -64,7 +65,7 @@ public class FunctionCallExpressFragment extends TypedExpressionElement {
 //                        expressions.addFirst(new VariableElementFragment());
                         return new FunctionCallValue((FunctionAbstractEntry) entry, expressions);
                     } else {
-                        throw new RuntimeException(
+                        throw new CompilerException(
                                 "Cannot find member function " + id + "in Class " + currentScope.getName()
                         );
                     }

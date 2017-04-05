@@ -1,6 +1,7 @@
 package codegenerate.instruction;
 
 import codegenerate.Register;
+import exception.CompilerException;
 
 /**
  * Created by ERIC_LAI on 2017-04-03.
@@ -52,6 +53,6 @@ public class JumpAndLinkInstruction extends Instruction {
         } else if (kind == Kind.JumpLinkRegister) {
             return "jlr" + "\t" + returnReg.alias + ", " + destReg.alias;
         }
-        throw new RuntimeException("No such jump or jump and link instruction!");
+        throw new CompilerException("No such jump or jump and link instruction!");
     }
 }

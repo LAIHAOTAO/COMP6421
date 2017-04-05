@@ -5,8 +5,8 @@ import codegenerate.MathOpt;
 import codegenerate.Register;
 import codegenerate.instruction.JumpAndLinkInstruction;
 import codegenerate.instruction.MathOptImmInstruction;
-import codegenerate.instruction.MathOptInstruction;
 import codegenerate.instruction.SWInstruction;
+import exception.CompilerException;
 import semantic.expression.TypedExpressionElement;
 import semantic.symboltable.entry.FunctionAbstractEntry;
 import semantic.symboltable.type.SymbolTableEntryType;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class FunctionCallValue extends DynamicValue implements Value {
 
-    private List<Value> parameters;
+    private List<Value> arguments;
     private List<SymbolTableEntryType> paramList;
     private int scopeSize;
     private String callingLabel;
@@ -27,20 +27,22 @@ public class FunctionCallValue extends DynamicValue implements Value {
     public FunctionCallValue(FunctionAbstractEntry entry, List<TypedExpressionElement> expressions) {
         paramList = entry.getParamTypeList();
 
-        // parameters checking
+        // arguments checking
         if (paramList.size() != expressions.size()) {
-            throw new RuntimeException(entry.getName() + " requires " + paramList.size() +
-                    " parameters, but only found " + expressions.size() + " while calling it");
+            throw new CompilerException(entry.getName() + " requires " + paramList.size() +
+                    " arguments, but only found " + expressions.size() + " while calling it");
         }
-        parameters = new ArrayList<>(expressions.size());
+        arguments = new ArrayList<>(expressions.size());
         for (int i = 0; i < paramList.size(); i++) {
             TypedExpressionElement expr = expressions.get(i);
             SymbolTableEntryType type = paramList.get(i);
             if (!expr.getType().equals(type)) {
-                throw new RuntimeException("the " + (i + 1) + " parameter type expected " + type
+                throw new CompilerException("the " + (i + 1) + " parameter type expected " + type
                         + ", but found " + expr.getType());
             }
-            parameters.add(expr.getValue());
+            // pass the parameter to become argument, this "expr" should implement its "getValue()"
+            // method to determine return value or reference !!!
+            arguments.add(expr.getValue());
         }
 
         callingLabel = entry.getLabel();
@@ -50,28 +52,28 @@ public class FunctionCallValue extends DynamicValue implements Value {
     @Override
     public Value getUsedValue(CodeGenerateContext context) {
 
-        // the first parameter should be one word below stack pointer so
+        // the first argument should be one word below stack pointer so
         // initialize it with -4
-        int paramsOffset = -4;
-        // add parameters in reversed order
-        for (int i = parameters.size() - 1; i >= 0; i--) {
-            Register reg = parameters.get(i).getRegisterValue(context).getRegister();
-            context.appendInstruction(new SWInstruction(paramsOffset, Register.STACK_POINTER, reg)
+        int argumentOffset = -4;
+        // add arguments in reversed order
+        for (int i = arguments.size() - 1; i >= 0; i--) {
+            Register reg = arguments.get(i).getRegisterValue(context).getRegister();
+            context.appendInstruction(new SWInstruction(argumentOffset, Register.STACK_POINTER, reg)
                     .setComment("add parameter"));
             // pass value or pass reference, the offset should always 4
-            paramsOffset -= 4;
+            argumentOffset -= 4;
         }
 
         // store and update the frame pointer
         context.appendInstruction(new SWInstruction(
-                paramsOffset - 4, Register.STACK_POINTER, Register.FRAME_POINTER
+                argumentOffset - 4, Register.STACK_POINTER, Register.FRAME_POINTER
         ).setComment("store the previous frame pointer"));
         context.appendInstruction(new MathOptImmInstruction(
-                MathOpt.ADD.immediateOpcode, Register.FRAME_POINTER, Register.STACK_POINTER, paramsOffset - 4
+                MathOpt.ADD.immediateOpcode, Register.FRAME_POINTER, Register.STACK_POINTER, argumentOffset - 4
         ).setComment("update the frame pointer"));
 
         // update the stack pointer to the new function
-        int varOffset = scopeSize - (Math.abs(paramsOffset - 4) + 8);
+        int varOffset = scopeSize - (Math.abs(argumentOffset - 4) + 8);
         context.appendInstruction(new MathOptImmInstruction(
                 MathOpt.ADD.immediateOpcode, Register.STACK_POINTER, Register.FRAME_POINTER, varOffset
         ).setComment("update the stack pointer"));

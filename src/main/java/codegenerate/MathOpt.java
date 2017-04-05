@@ -1,6 +1,7 @@
 package codegenerate;
 
 import common.SpecialValues;
+import exception.CompilerException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +117,7 @@ public enum  MathOpt {
     public static MathOpt fromToken(String tokenValue) {
         MathOpt op = operators.get(tokenValue);
         if (op != null) return op;
-        else throw new RuntimeException("No such operation" + tokenValue + " defined");
+        else throw new CompilerException("No such operation" + tokenValue + " defined");
     }
 
 }

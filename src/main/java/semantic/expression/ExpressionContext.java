@@ -1,5 +1,6 @@
 package semantic.expression;
 
+import exception.CompilerException;
 import semantic.Statement.Statement;
 import semantic.symboltable.entry.FunctionAbstractEntry;
 
@@ -28,7 +29,7 @@ public class ExpressionContext {
         ExpressionElement child;
 
         if (exprStack.isEmpty()) {
-            throw new RuntimeException("Try to pop from empty stack");
+            throw new CompilerException("Try to pop from empty stack");
         } else {
             child = exprStack.pop();
         }
@@ -40,7 +41,7 @@ public class ExpressionContext {
                 // then just add the child variable to the current function
                 currentFunction.addStatement((Statement) child);
             } else {
-                throw new RuntimeException("Something wrong here ...");
+                throw new CompilerException("Something wrong here ...");
             }
         } else {
             // if the stack is not empty, do the "migration", passing

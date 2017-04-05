@@ -27,6 +27,11 @@ public class Const {
 
     public static final String PREV_FRAME_POINTER = "@prevFp";
 
+    public static final int PREV_FRAME_POINTER_SPACE = 4;
+
+    public static final int FUNC_RETURN_ADDR_SPACE = 4;
+
+    public static final int EXTRA_SPACE = 8;
 
     public enum ErrorLevel {
         Lexical, Syntactic, Semantic;

@@ -18,13 +18,17 @@ import java.util.Objects;
  */
 public class Parser {
 
-    public static boolean turnOnDebug = false;
+    private static boolean DEBUG = false;
     private static Token inputToken;
     private static Token prevToken;
     private static boolean isSuccess = true;
 
     public static final int FIRST_PARSE = 1;
     public static final int SECOND_PARSE = 2;
+
+    public static void turnOnDebug() {
+        DEBUG = true;
+    }
 
     public static boolean firstParse(LexicalScanner scanner, ParserTable table) throws IOException {
         return parse(scanner, table, FIRST_PARSE);
@@ -44,7 +48,7 @@ public class Parser {
         StringBuilder semanticErrorCollector = SymbolTableActionHandler.symActionErrorCollector;
 
         // ******************************************************************************* //
-        if (turnOnDebug) {
+        if (DEBUG) {
             derivation = new DerivationBuilder(scanner.getFileNm());
         }
         // ******************************************************************************* //
@@ -145,7 +149,7 @@ public class Parser {
                 }
 
                 // ******************************************************************************* //
-                if (turnOnDebug && derivation != null) {
+                if (DEBUG && derivation != null) {
                     derivation.outputDerivation();
                 }
                 // ******************************************************************************* //
@@ -157,7 +161,7 @@ public class Parser {
         ErrorFileGenerator.outputError(scanner.getFileNm(), semanticErrorCollector.toString(), Const.ErrorLevel.Semantic);
 
         // ******************************************************************************* //
-        if (turnOnDebug && derivation != null) {
+        if (DEBUG && derivation != null) {
             derivation.close();
         }
         if (semanticErrorCollector.toString().isEmpty()) {

@@ -5,6 +5,7 @@ import codegenerate.MathOpt;
 import codegenerate.Register;
 import codegenerate.instruction.MathOptImmInstruction;
 import codegenerate.instruction.MathOptInstruction;
+import exception.CompilerException;
 
 /**
  * Created by ERIC_LAI on 2017-03-28.
@@ -46,7 +47,7 @@ public class MathValue extends DynamicValue {
         }
 
         if (res == null)
-            throw new RuntimeException("Something wrong inside MathValue getUsedValue()");
+            throw new CompilerException("Something wrong inside MathValue getUsedValue()");
         return res;
     }
 

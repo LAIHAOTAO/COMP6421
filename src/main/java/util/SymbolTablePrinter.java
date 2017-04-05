@@ -4,6 +4,8 @@ import common.Const;
 import semantic.symboltable.SymbolTable;
 import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.entry.SymbolTableEntry;
+import semantic.symboltable.type.ClassType;
+import semantic.symboltable.type.SymbolTableEntryType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,8 +17,6 @@ import java.util.Map;
  */
 public class SymbolTablePrinter {
 
-    private static final int CONSOLE = 1;
-    private static final int FILE = 2;
     private static Formatter formatter;;
 
     public static void print() {
@@ -45,13 +45,22 @@ public class SymbolTablePrinter {
         formatter.format("--------------------------------------------------------------------------------------------------\n");
 
         for (Map.Entry<String, SymbolTableEntry> entry : table.entrySet()) {
+            String link;
             SymbolTable scope = entry.getValue().getScope();
+            if (scope == null) {
+                SymbolTableEntryType type = entry.getValue().getType();
+                if (type instanceof ClassType) {
+                    link = ((ClassType) type).getName();
+                }else link = "null";
+            } else {
+                link = scope.getName();
+            }
             formatter.format("| %-15s | %-15s | %-30s | %-10s | %-10s |\n",
                     entry.getValue().getName(),
                     entry.getValue().getKind(),
                     entry.getValue().getType().toString(),
                     entry.getValue().getOffset(),
-                    (scope != null) ? scope.getName() : "null"
+                    link
             );
         }
 

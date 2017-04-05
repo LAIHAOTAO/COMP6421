@@ -6,6 +6,7 @@ import codegenerate.Register;
 import codegenerate.instruction.Instruction;
 import codegenerate.instruction.MathOptImmInstruction;
 import codegenerate.instruction.MathOptInstruction;
+import exception.CompilerException;
 import semantic.expression.ExpressionElement;
 import semantic.expression.RelationExpressionFragment;
 import semantic.value.*;
@@ -27,7 +28,7 @@ public class ReturnStatement extends ExpressionElement implements Statement {
 
     @Override
     public String generateCode(CodeGenerateContext c) {
-        if (reValue == null) throw new RuntimeException("return value is null");
+        if (reValue == null) throw new CompilerException("return value is null");
         Value val = reValue.getUsedValue(c);
         Instruction i;
         if (val instanceof StaticNumValue) {
@@ -42,7 +43,7 @@ public class ReturnStatement extends ExpressionElement implements Statement {
                 ).setComment("return value is a register value, get its value");
                 c.appendInstruction(i);
             } else {
-                throw new RuntimeException("Unexpected return type " + val.getClass());
+                throw new CompilerException("Unexpected return type " + val.getClass());
             }
         }
         return i.toString();

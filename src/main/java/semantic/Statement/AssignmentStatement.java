@@ -3,6 +3,7 @@ package semantic.Statement;
 import codegenerate.CodeGenerateContext;
 import codegenerate.instruction.Instruction;
 import codegenerate.instruction.SWInstruction;
+import exception.CompilerException;
 import semantic.expression.ExpressionElement;
 import semantic.expression.VariableElementFragment;
 import semantic.value.*;
@@ -10,7 +11,7 @@ import semantic.value.*;
 /**
  * Created by ERIC_LAI on 2017-03-24.
  */
-public class AssignmentStatement extends ExpressionElement implements Statement{
+public class AssignmentStatement extends ExpressionElement implements Statement {
 
     public enum State {
         WAIT_LHS,
@@ -58,7 +59,7 @@ public class AssignmentStatement extends ExpressionElement implements Statement{
             context.finish();
             System.out.println("AssignmentStatement: " + lhs + " = " + rhs);
         } else {
-            throw new RuntimeException("Unexpected " + expr + " while in state " + currentState);
+            throw new CompilerException("Unexpected " + expr + " while in state " + currentState);
         }
     }
 
@@ -68,7 +69,6 @@ public class AssignmentStatement extends ExpressionElement implements Statement{
             if (lhs instanceof StoredValue) {
                 RegisterValue rhsRegVal = rhs.getRegisterValue(c);
                 AbsoluteAddressValue lhsAddrVal = ((StoredValue) lhs).getAbsAddress(c);
-
                 Instruction storeWord = new SWInstruction(
                         lhsAddrVal.getOffset().intValue(),
                         lhsAddrVal.getBaseAddr().getRegister(),
@@ -86,10 +86,10 @@ public class AssignmentStatement extends ExpressionElement implements Statement{
 
                 return storeWord.toString();
             } else {
-                throw new RuntimeException("Expected a stored value left hand side in assignment statement");
+                throw new CompilerException("Expected a stored value left hand side in assignment statement");
             }
         } else {
-            throw new RuntimeException("Cannot generate the code, since the assignment statement is not complete !");
+            throw new CompilerException("Cannot generate the code, since the assignment statement is not complete !");
         }
     }
 }

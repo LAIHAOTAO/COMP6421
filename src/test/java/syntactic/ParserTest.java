@@ -98,7 +98,7 @@ public class ParserTest {
     @Test
     public void testDerivation() throws IOException {
 
-        Parser.turnOnDebug = true;
+        Parser.turnOnDebug();
 
         String startSymbol = "prog";
 
@@ -127,7 +127,7 @@ public class ParserTest {
 
     @Test
     public void test() throws IOException {
-        Parser.turnOnDebug = true;
+        Parser.turnOnDebug();
         for (int i = 1; i <= 18; i++) {
             testProgram(i);
         }

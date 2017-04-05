@@ -2,6 +2,7 @@ package semantic.handler;
 
 
 import common.Const;
+import exception.CompilerException;
 import lexical.Token;
 import lexical.TokenType;
 import semantic.DuplicateDeclHandler;
@@ -65,11 +66,11 @@ public class SymbolTableActionHandler extends ActionHandler {
                     if (!symContext.isEmpty()) {
                         symbolTableList.add(symContext.pop());
                     } else {
-                        throw new RuntimeException("missing parentheses");
+                        throw new CompilerException("missing parentheses");
                     }
                     break;
 //                default:
-//                    throw new RuntimeException("No such symbol table action");
+//                    throw new CompilerException("No such symbol table action");
             }
         } else {
             // if in the second parse, need to maintain
@@ -95,7 +96,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                     if (!symContext.isEmpty()) {
                         symContext.pop();
                     } else {
-                        throw new RuntimeException("missing parentheses");
+                        throw new CompilerException("missing parentheses");
                     }
                     break;
                 case "sym_CreateVariable":
@@ -107,7 +108,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 case "sym_StoreDimension":
                     break;
 //                default:
-//                    throw new RuntimeException("Unknown error happen during second parse");
+//                    throw new CompilerException("Unknown error happen during second parse");
             }
         }
     }
@@ -121,7 +122,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 }
             }
         }
-        throw new RuntimeException("The " + name + "table do not exit !!!");
+        throw new CompilerException("The " + name + "table do not exit !!!");
     }
 
     private static void startMemberFunction(SymbolTable currentTable) {
@@ -257,7 +258,7 @@ public class SymbolTableActionHandler extends ActionHandler {
             @SuppressWarnings("ConstantConditions")
             ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(((ClassType) type).getName());
             if (classEntry == null) {
-                throw new RuntimeException("Attempt the use an undefined class at line: " + cacheIdToken.getLocation());
+                throw new CompilerException("Attempt the use an undefined class at line: " + cacheIdToken.getLocation());
             } else {
                 ((ClassType) classEntry.getType()).setEntry(classEntry);
             }
@@ -320,7 +321,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(cacheType.getValue());
                 return new ClassType(classEntry);
         }
-        throw new RuntimeException("No such type defined in the grammar");
+        throw new CompilerException("No such type defined in the grammar");
     }
 
 }

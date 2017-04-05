@@ -22,7 +22,7 @@ public class SemanticMigrationTest {
         try {
 
             parserDriver = new ParserDriver();
-            Parser.turnOnDebug = true;
+            Parser.turnOnDebug();
 
             Parser.firstParse(scanner, parserDriver.getTable());
             boolean isSuccess = Parser.secondParse(scanner, parserDriver.getTable());

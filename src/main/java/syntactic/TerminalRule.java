@@ -1,5 +1,7 @@
 package syntactic;
 
+import exception.CompilerException;
+
 import java.util.LinkedList;
 
 /**
@@ -34,7 +36,7 @@ public class TerminalRule extends GrammarRule{
     @Override
     public LinkedList<TerminalRule> getFollowSet() {
         // terminals do not have follow set
-        throw new RuntimeException("terminal symbol do not have any follow set");
+        throw new CompilerException("terminal symbol do not have any follow set");
     }
 
     @Override

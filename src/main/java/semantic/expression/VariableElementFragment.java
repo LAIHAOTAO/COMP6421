@@ -2,6 +2,8 @@ package semantic.expression;
 
 import codegenerate.MathOpt;
 import codegenerate.Register;
+import common.Const;
+import exception.CompilerException;
 import semantic.handler.ActionHandler;
 import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
@@ -66,14 +68,12 @@ public class VariableElementFragment extends TypedExpressionElement {
     public Value getValue() {
         if (currentType instanceof IntType || currentType instanceof FloatType) {
             return new StoredValue(baseAddr, offset);
-        }
-        if (functionCall) {
+        } else if (functionCall) {
             // todo
             return null;
-        } else {
-            if (isReference) return baseAddr;
-            else return new IndirectValue(new MathValue(MathOpt.ADD, baseAddr, offset));
-        }
+        } else if (isReference) {
+            return baseAddr;
+        } else return new IndirectValue(new MathValue(MathOpt.ADD, baseAddr, offset));
     }
 
     @Override
@@ -116,22 +116,44 @@ public class VariableElementFragment extends TypedExpressionElement {
             }
         };
 
+        // if the entry is a variable
         if (entry instanceof VariableEntry ||
                 entry.getType() instanceof IntType ||
                 entry.getType() instanceof FloatType) {
 
             this.isReference = false;
-            this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
-            this.offset = offsetValue;
 
-        } else if (entry instanceof ParameterEntry) {
+            // if entry is not parameter
+            if (!(entry instanceof ParameterEntry)) {
+                this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
+                this.offset = offsetValue;
+            }
+            // if entry is parameter but primitive type
+            else {
+                this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
+                this.offset = new StaticNumValue(entry.getOffset() + Const.EXTRA_SPACE);
+            }
+
+        }
+
+        // if the entry is a parameter, and it is class type, we need to pass it by reference
+        else if (entry instanceof ParameterEntry) {
 
             this.isReference = true;
-            this.baseAddr = new RegisterValue(Register.FRAME_POINTER);
 
-        } else {
-            throw new RuntimeException("Something wrong with that entry in VariableElementFragment");
+            // calculate the offset of this parameter, tricky part, since we use the content which is
+            // the address of its real address !!!
+            this.baseAddr = new AbsoluteAddressValue(
+                    new RegisterValue(Register.FRAME_POINTER),
+                    new StaticNumValue(entry.getOffset() + Const.EXTRA_SPACE)
+            );
+
+            this.offset = new StaticNumValue(0);
+
         }
+
+        // the above conditions can not be satisfied then throw an error
+        else throw new CompilerException("Something wrong with that entry in VariableElementFragment");
 
         currentType = entry.getType();
         currentScope = currentType.getScope();
@@ -143,7 +165,7 @@ public class VariableElementFragment extends TypedExpressionElement {
     private SymbolTableEntry getEntry(String id) {
 
         if (currentScope == null) {
-            throw new RuntimeException("Cannot get entry of name " + id);
+            throw new CompilerException("Cannot get entry of name " + id);
         }
 
         SymbolTableEntry e;
@@ -160,7 +182,7 @@ public class VariableElementFragment extends TypedExpressionElement {
         // otherwise this id maybe a free function name (if it is a member function name, the class name should
         // be met first)
         if (e == null) {
-            throw new RuntimeException("Cannot find entry with " + id + " in current scope " + currentScope.getName());
+            throw new CompilerException("Cannot find entry with " + id + " in current scope " + currentScope.getName());
         }
 
         return e;

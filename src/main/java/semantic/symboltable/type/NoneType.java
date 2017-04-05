@@ -1,5 +1,6 @@
 package semantic.symboltable.type;
 
+import exception.CompilerException;
 import semantic.symboltable.SymbolTable;
 
 /**
@@ -8,7 +9,7 @@ import semantic.symboltable.SymbolTable;
 public class NoneType implements SymbolTableEntryType {
     @Override
     public int getSize() {
-        throw new RuntimeException("It is no possible to call NoneType getSize() method ...");
+        throw new CompilerException("It is no possible to call NoneType getSize() method ...");
     }
 
     @Override

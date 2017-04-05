@@ -1,6 +1,7 @@
 package semantic.expression;
 
 import codegenerate.MathOpt;
+import exception.CompilerException;
 import semantic.symboltable.type.SymbolTableEntryType;
 import semantic.value.MathValue;
 import semantic.value.Value;
@@ -59,7 +60,7 @@ public abstract class AbstractRelationAndMathExpressionFragment extends TypedExp
 
                 // type checking
                 if (!Objects.equals(first.getType(), second.getType())) {
-                    throw new RuntimeException("Type error: " + first.getType() + " is not compatible with " +
+                    throw new CompilerException("Type error: " + first.getType() + " is not compatible with " +
                             second.getType() + " for operator: " + operator.symbol);
                 }
 

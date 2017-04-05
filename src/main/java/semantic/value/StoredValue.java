@@ -4,6 +4,7 @@ import codegenerate.CodeGenerateContext;
 import codegenerate.MathOpt;
 import codegenerate.Register;
 import codegenerate.instruction.MathOptInstruction;
+import exception.CompilerException;
 
 /**
  * Created by ERIC_LAI on 2017-03-31.
@@ -53,6 +54,6 @@ public class StoredValue extends DynamicValue {
 
             return new AbsoluteAddressValue(regVal, new StaticNumValue(0));
         } else
-            throw new RuntimeException("Something wrong inside StoredValue getAbsAddress method");
+            throw new CompilerException("Something wrong inside StoredValue getAbsAddress method");
     }
 }

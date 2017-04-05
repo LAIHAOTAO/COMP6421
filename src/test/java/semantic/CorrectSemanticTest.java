@@ -63,7 +63,7 @@ public class CorrectSemanticTest {
         // end of update grammar
 
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/CorrectProgram.txt");
-        Parser.turnOnDebug = true;
+        Parser.turnOnDebug();
         boolean isSuccess = Parser.firstParse(scanner, pureGenerator.getParseTable());
         System.out.println("parsing result: " + ((isSuccess) ? "success" : "fail"));
     }

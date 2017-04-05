@@ -1,5 +1,7 @@
 package codegenerate;
 
+import exception.CompilerException;
+
 import java.util.*;
 
 /**
@@ -32,7 +34,7 @@ public class RegisterManager {
             track.remove(tmp);
             return tmp;
         }
-        throw new RuntimeException("You are run out of register ...");
+        throw new CompilerException("You are run out of register ...");
     }
 
     /**

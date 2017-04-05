@@ -1,6 +1,7 @@
 package syntactic;
 
 import common.Const;
+import exception.CompilerException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -67,9 +68,9 @@ public class ParserGenerator {
     // API for driver to add its constructed rule
     public void addGrammarRule(String symbol, String[] grammarRules) {
         if (!this.nonTerminalMap.containsKey(symbol)) {
-            throw new RuntimeException("ParserGenerator, symbol: " + symbol + " is not in the grammar");
+            throw new CompilerException("ParserGenerator, symbol: " + symbol + " is not in the grammar");
         } else if (symbol.equals("$")) {
-            throw new RuntimeException("ParserGenerator, $ cannot be used as a symbol");
+            throw new CompilerException("ParserGenerator, $ cannot be used as a symbol");
         }
 
         LinkedList<GrammarRule> rules = new LinkedList<>();
@@ -89,7 +90,7 @@ public class ParserGenerator {
             }
 
             else {
-                throw new RuntimeException(gr + " is not in the grammar");
+                throw new CompilerException(gr + " is not in the grammar");
             }
         }
         this.nonTerminalMap.get(symbol).addRule(rules);

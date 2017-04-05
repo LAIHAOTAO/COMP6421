@@ -20,7 +20,7 @@ public class IncorrectSemanticTest {
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES + "semantic/IncorrectProgram.txt");
 
         ParserDriver parserDriver = new ParserDriver();
-        Parser.turnOnDebug = true;
+        Parser.turnOnDebug();
 
         boolean isSuccess = Parser.firstParse(scanner, parserDriver.getTable());
         System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));

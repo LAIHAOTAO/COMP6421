@@ -1,5 +1,6 @@
 package syntactic;
 
+import exception.CompilerException;
 import lexical.Token;
 import semantic.handler.SemanticActionHandler;
 import semantic.handler.SymbolTableActionHandler;
@@ -26,7 +27,7 @@ public class ActionRule extends GrammarRule {
             // if it is the first parse, just ignore the semantic action
         }
         else {
-            throw new RuntimeException("No such semantic action");
+            throw new CompilerException("No such semantic action");
         }
     }
     
