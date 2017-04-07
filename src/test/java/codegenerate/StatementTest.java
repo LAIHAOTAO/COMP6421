@@ -13,7 +13,7 @@ import java.io.IOException;
  * Created by ERIC_LAI on 2017-04-02.
  */
 @SuppressWarnings("Duplicates")
-public class AssignmentStatementTest {
+public class StatementTest {
 
     @Test
     public void testOnlyProgram() {
@@ -33,6 +33,18 @@ public class AssignmentStatementTest {
     @Test
     public void testFreeFunctionWithClassParameter() {
         test(Const.DIR_RES + "codegenerate/FreeFunctionWithClassParameter.txt");
+    }
+
+    @Test
+    public void testIfStatement() {
+        test(Const.DIR_RES + "codegenerate/IfStatement.txt");
+
+    }
+
+    @Test
+    public void testForStatement() {
+        test(Const.DIR_RES + "codegenerate/ForStatement.txt");
+
     }
 
     private void test(String sourceFilePath) {

@@ -64,7 +64,7 @@ public class AssignmentStatement extends ExpressionElement implements Statement 
     }
 
     @Override
-    public String generateCode(CodeGenerateContext c) {
+    public void generateCode(CodeGenerateContext c) {
         if (this.currentState == State.DONE) {
             if (lhs instanceof StoredValue) {
                 RegisterValue rhsRegVal = rhs.getRegisterValue(c);
@@ -84,7 +84,6 @@ public class AssignmentStatement extends ExpressionElement implements Statement 
                     c.registerManager.freeRegister(rhsRegVal.getRegister());
                 }
 
-                return storeWord.toString();
             } else {
                 throw new CompilerException("Expected a stored value left hand side in assignment statement");
             }

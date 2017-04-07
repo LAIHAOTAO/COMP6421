@@ -1,7 +1,10 @@
 package semantic.handler;
 
+import exception.CompilerException;
 import lexical.Token;
 import semantic.Statement.AssignmentStatement;
+import semantic.Statement.ForStatementElement;
+import semantic.Statement.IfStatement;
 import semantic.Statement.ReturnStatement;
 import semantic.expression.*;
 import semantic.symboltable.SymbolTable;
@@ -21,9 +24,9 @@ public class SemanticActionHandler extends ActionHandler {
 
     public static void process(String action, Token token) {
 
+        ExpressionElement top;
 
         switch (action) {
-
             case "sem_FinishVariable":
                 if (!skipFinishVariable) {
                     debugInfo(action, token);
@@ -40,10 +43,44 @@ public class SemanticActionHandler extends ActionHandler {
                 break;
 
             case "sem_EndRelationExpression":
+                top = exprContext.getCurrent();
+                if (top instanceof RelationExpressionFragment) {
+                    debugInfo(action, token);
+                    exprContext.finish();
+                } else if (top instanceof ForStatementElement) {
+                    // do nothing so far, it should not be an error, since the relation finish
+                    // by itself when the state reach to DONE
+                    debugInfo(action, token);
+                    break;
+                } else {
+                    throw new CompilerException("Expected element RelationExpression element but found "
+                            + top.getClass());
+                }
+                top = null;
+                break;
+
             case "sem_EndAdditionExpression":
+                top = exprContext.getCurrent();
+                if (top instanceof AdditionExpressionFragment) {
+                    debugInfo(action, token);
+                    exprContext.finish();
+                } else {
+                    throw new CompilerException("Expected AdditionExpression element but found "
+                            + top.getClass());
+                }
+                top = null;
+                break;
+
             case "sem_EndMultiplicationExpression":
-                debugInfo(action, token);
-                exprContext.finish();
+                top = exprContext.getCurrent();
+                if (top instanceof MultiplicationExpressionFragment) {
+                    debugInfo(action, token);
+                    exprContext.finish();
+                } else {
+                    throw new CompilerException("Expected MultiplicationExpression element but found "
+                            + top.getClass());
+                }
+                top = null;
                 break;
 
             // ***************************************************************************************
@@ -105,11 +142,28 @@ public class SemanticActionHandler extends ActionHandler {
 
             // ***************************************************************************************
             case "sem_StartIfStatement":
+                debugInfo(action, token);
+                exprContext.push(new IfStatement());
+                break;
 
             case "sem_StartForStatement":
+                debugInfo(action, token);
+                exprContext.push(new ForStatementElement());
+                break;
 
             case "sem_StartBlock":
+                debugInfo(action, token);
+                exprContext.push(new StatementBlockElement());
+                break;
+
             case "sem_EndBlock":
+                debugInfo(action, token);
+                top = exprContext.getCurrent();
+                if (top instanceof StatementBlockElement) {
+                    exprContext.finish();
+                } else throw new CompilerException("Expected StatementBlockElement but it was " + top.getClass());
+                top = null;
+                break;
 
             case "sem_StartFunctionCall":
                 if (skipFunctionCall) break;
@@ -117,13 +171,13 @@ public class SemanticActionHandler extends ActionHandler {
                     debugInfo(action, token);
                     exprContext.push(new FunctionCallExpressFragment(token.getValue(), symContext.peek()));
                 }
-//                System.out.println("call function: " + token.getValue());
                 break;
 
             case "sem_StartReturnStatement":
                 debugInfo(action, token);
                 exprContext.push(new ReturnStatement());
                 break;
+
             case "sem_StartGetStatement":
             case "sem_StartPutStatement":
 

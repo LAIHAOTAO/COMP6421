@@ -7,5 +7,5 @@ import codegenerate.CodeGenerateContext;
  */
 public interface Statement {
 
-    String generateCode(CodeGenerateContext c);
+    void generateCode(CodeGenerateContext c);
 }

@@ -27,7 +27,7 @@ public class ReturnStatement extends ExpressionElement implements Statement {
     }
 
     @Override
-    public String generateCode(CodeGenerateContext c) {
+    public void generateCode(CodeGenerateContext c) {
         if (reValue == null) throw new CompilerException("return value is null");
         Value val = reValue.getUsedValue(c);
         Instruction i;
@@ -46,7 +46,6 @@ public class ReturnStatement extends ExpressionElement implements Statement {
                 throw new CompilerException("Unexpected return type " + val.getClass());
             }
         }
-        return i.toString();
     }
 
     @Override

@@ -14,7 +14,7 @@ restOfStatment -> FOR sem_StartForStatement LCP type sym_StoreType sem_StartAssi
 assignStat -> variable_ assignOp expr
 statBlock -> LBP sem_StartBlock statement_list RBP sem_EndBlock | statement | EPSILON sem_StartBlock sem_EndBlock
 expr -> sem_StartRelationExpression arithExpr exp_
-exp_ -> relOp sem_PushRelationOperation sem_StartRelationExpression arithExpr | EPSILON sem_EndRelationExpression
+exp_ -> relOp sem_PushRelationOperation sem_StartRelationExpression arithExpr sem_EndRelationExpression | EPSILON sem_EndRelationExpression
 relExpr -> sem_StartRelationExpression arithExpr relOp sem_PushRelationOperation arithExpr sem_EndRelationExpression
 arithExpr -> sem_StartAdditionExpression term arithExpr_
 arithExpr_ -> addOp sem_PushAdditionOperation sem_StartAdditionExpression term arithExpr_ | EPSILON sem_EndAdditionExpression
