@@ -71,7 +71,6 @@ public class FunctionCallExpressFragment extends TypedExpressionElement {
                     }
                 } else {
                     // entry is free function
-                    // todo need to do something before a function call
                     return new FunctionCallValue((FunctionEntry)entry, expressions);
                 }
             }

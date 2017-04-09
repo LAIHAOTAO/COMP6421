@@ -1,7 +1,7 @@
 package semantic.expression;
 
 import codegenerate.CodeGenerateContext;
-import semantic.Statement.Statement;
+import semantic.statement.Statement;
 import semantic.value.Value;
 import semantic.value.VoidValue;
 

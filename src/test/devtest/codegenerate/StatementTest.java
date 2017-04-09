@@ -47,6 +47,11 @@ public class StatementTest {
 
     }
 
+    @Test
+    public void testIndexing() {
+        test(Const.DIR_RES + "codegenerate/SimpleArray.txt");
+    }
+
     private void test(String sourceFilePath) {
         LexicalScanner scanner = new LexicalScanner(sourceFilePath);
 

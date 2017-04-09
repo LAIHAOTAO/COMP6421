@@ -12,6 +12,7 @@ import semantic.symboltable.entry.SymbolTableEntry;
 import semantic.symboltable.entry.VariableEntry;
 import semantic.symboltable.type.*;
 import semantic.value.*;
+import sun.tools.java.CompilerError;
 
 /**
  * Created by ERIC_LAI on 2017-03-25.
@@ -49,8 +50,7 @@ public class VariableElementFragment extends TypedExpressionElement {
             // means we are in a member function
             SymbolTable outerClass = curScope.getParent();
             if (outerClass.exist(id) && !curScope.exist(id)) {
-                //                init(getEntry());
-                //                pushID(id);
+                // todo: member function call
             }
 
         } else {
@@ -91,12 +91,25 @@ public class VariableElementFragment extends TypedExpressionElement {
     @Override
     public void accept(ExpressionElement expr) {
         if (expr instanceof AdditionExpressionFragment) {
-            if (currentType instanceof ArrayType) {
 
+            if (currentType instanceof ArrayType) {
+                IndexingExpressionFragment child
+                        = new IndexingExpressionFragment((ArrayType) currentType);
+                context.push(child);
+                child.accept(expr);
+            } else {
+                throw new CompilerError("Cannot index non-array type " + currentType);
             }
+
         } else if (expr instanceof FunctionCallExpressFragment) {
+            // todo: member function call
 
         } else if (expr instanceof IndexingExpressionFragment) {
+
+            IndexingExpressionFragment e = (IndexingExpressionFragment) expr;
+            offset = new MathValue(MathOpt.ADD, offset, e.getValue());
+            currentType = ((ArrayType) currentType).getArrayTypeType();
+            currentScope = currentType.getScope();
 
         } else {
             super.accept(expr);
@@ -141,7 +154,8 @@ public class VariableElementFragment extends TypedExpressionElement {
 
             this.isReference = true;
 
-            // calculate the offset of this parameter, tricky part, since we use the content which is
+            // calculate the offset of this parameter, tricky part, since we use the content
+            // which is
             // the address of its real address !!!
             this.baseAddr = new AbsoluteAddressValue(
                     new RegisterValue(Register.FRAME_POINTER),
@@ -153,8 +167,10 @@ public class VariableElementFragment extends TypedExpressionElement {
         }
 
         // the above conditions can not be satisfied then throw an error
-        else throw new CompilerException("Something wrong with that entry in VariableElementFragment");
-
+        else {
+            throw new CompilerException("Something wrong with that entry in " +
+                    "VariableElementFragment");
+        }
         currentType = entry.getType();
         currentScope = currentType.getScope();
     }
@@ -168,24 +184,26 @@ public class VariableElementFragment extends TypedExpressionElement {
             throw new CompilerException("Cannot get entry of name " + id);
         }
 
-        SymbolTableEntry e;
+        SymbolTableEntry entry;
 
         if (!"global table".equals(currentScope.getParentName())) {
             // if current scope's parent is global table means we are in a
             // member function, search the fields of that class
-            e = currentScope.memberSearch(id);
+            entry = currentScope.memberSearch(id);
         } else {
             // if we are in a free function
-            e = currentScope.search(id);
+            entry = currentScope.search(id);
         }
 
-        // otherwise this id maybe a free function name (if it is a member function name, the class name should
+        // otherwise this id maybe a free function name (if it is a member function name, the
+        // class name should
         // be met first)
-        if (e == null) {
-            throw new CompilerException("Cannot find entry with " + id + " in current scope " + currentScope.getName());
+        if (entry == null) {
+            throw new CompilerException("Cannot find entry with " + id + " in current scope " +
+                    currentScope.getName());
         }
 
-        return e;
+        return entry;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package semantic.expression;
 
 import exception.CompilerException;
-import semantic.Statement.Statement;
+import semantic.statement.Statement;
 import semantic.symboltable.entry.FunctionAbstractEntry;
 
 import java.util.Stack;

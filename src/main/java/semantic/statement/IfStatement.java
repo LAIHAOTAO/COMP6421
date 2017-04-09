@@ -1,4 +1,4 @@
-package semantic.Statement;
+package semantic.statement;
 
 import codegenerate.CodeGenerateContext;
 import codegenerate.LabelGenerator;

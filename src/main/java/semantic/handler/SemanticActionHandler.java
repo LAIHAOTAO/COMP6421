@@ -2,10 +2,7 @@ package semantic.handler;
 
 import exception.CompilerException;
 import lexical.Token;
-import semantic.Statement.AssignmentStatement;
-import semantic.Statement.ForStatementElement;
-import semantic.Statement.IfStatement;
-import semantic.Statement.ReturnStatement;
+import semantic.statement.*;
 import semantic.expression.*;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.FunctionEntry;
@@ -53,8 +50,8 @@ public class SemanticActionHandler extends ActionHandler {
                     debugInfo(action, token);
                     break;
                 } else {
-                    throw new CompilerException("Expected element RelationExpression element but found "
-                            + top.getClass());
+                    throw new CompilerException("Expected element RelationExpression " +
+                            "element but found " + top.getClass());
                 }
                 top = null;
                 break;
@@ -77,13 +74,13 @@ public class SemanticActionHandler extends ActionHandler {
                     debugInfo(action, token);
                     exprContext.finish();
                 } else {
-                    throw new CompilerException("Expected MultiplicationExpression element but found "
-                            + top.getClass());
+                    throw new CompilerException("Expected MultiplicationExpression " +
+                            "element but found " + top.getClass());
                 }
                 top = null;
                 break;
 
-            // ***************************************************************************************
+            // ************************************************************************************
             case "sem_StartAssignmentStatment":
                 debugInfo(action, token);
                 exprContext.push(new AssignmentStatement());
@@ -101,7 +98,7 @@ public class SemanticActionHandler extends ActionHandler {
                 exprContext.push(new MultiplicationExpressionFragment());
                 break;
 
-            // ***************************************************************************************
+            // ************************************************************************************
             case "sem_PushVariableName":
                 String id = token.getValue();
 
@@ -123,10 +120,10 @@ public class SemanticActionHandler extends ActionHandler {
                 exprContext.getCurrent().pushIntNum(Integer.parseInt(token.getValue()));
                 break;
             case "sem_PushFloatLiteral":
-                // todo
+                // todo floating point number stuff ...
                 break;
 
-            // ***************************************************************************************
+            // ************************************************************************************
             case "sem_PushRelationOperation":
                 debugInfo(action, token);
                 exprContext.getCurrent().pushRelationOp(token.getValue());
@@ -140,7 +137,7 @@ public class SemanticActionHandler extends ActionHandler {
                 exprContext.getCurrent().pushMultiplicationOp(token.getValue());
                 break;
 
-            // ***************************************************************************************
+            // ************************************************************************************
             case "sem_StartIfStatement":
                 debugInfo(action, token);
                 exprContext.push(new IfStatement());
@@ -161,26 +158,41 @@ public class SemanticActionHandler extends ActionHandler {
                 top = exprContext.getCurrent();
                 if (top instanceof StatementBlockElement) {
                     exprContext.finish();
-                } else throw new CompilerException("Expected StatementBlockElement but it was " + top.getClass());
+                } else {
+                    throw new CompilerException("Expected StatementBlockElement but it was "
+                            + top.getClass());
+                }
                 top = null;
                 break;
 
+            // ************************************************************************************
             case "sem_StartFunctionCall":
                 if (skipFunctionCall) break;
                 else {
                     debugInfo(action, token);
-                    exprContext.push(new FunctionCallExpressFragment(token.getValue(), symContext.peek()));
+                    exprContext.push(
+                            new FunctionCallExpressFragment(token.getValue(), symContext.peek())
+                    );
                 }
                 break;
 
+            // ************************************************************************************
             case "sem_StartReturnStatement":
                 debugInfo(action, token);
                 exprContext.push(new ReturnStatement());
                 break;
 
             case "sem_StartGetStatement":
-            case "sem_StartPutStatement":
+                debugInfo(action, token);
+                exprContext.push(new GetStatement());
+                break;
 
+            case "sem_StartPutStatement":
+                debugInfo(action, token);
+                exprContext.push(new PutStatement());
+                break;
+
+            // ************************************************************************************
             default:
                 break;
         }

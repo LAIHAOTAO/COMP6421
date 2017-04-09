@@ -1,6 +1,6 @@
 package semantic.symboltable.entry;
 
-import semantic.Statement.Statement;
+import semantic.statement.Statement;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.type.SymbolTableEntryType;
 

@@ -24,7 +24,7 @@ term_ -> multOp sem_PushMultiplicationOperation sem_StartMultiplicationExpressio
 factor -> LCP arithExpr RCP | FLOAT_NUM sem_PushFloatLiteral | INT_NUM sem_PushIntLiteral | NOT factor | variable_ factor_ | sign factor
 variable_ -> ID sem_PushVariableName indice_list idnest_list_
 idnest_list_ -> idnest_ idnest_list_ | EPSILON sem_FinishVariable
-idnest_ -> DOT ID sem_PushVariableName indice_list
+idnest_ -> DOT ID sem_PushVariableName indice_list sem_FinishVariable
 factor_ -> sem_StartFunctionCall LCP aParams RCP sem_EndFunctionCall | EPSILON
 indice -> LSP arithExpr RSP
 arraySize -> LSP INT_NUM sym_StoreDimension RSP
@@ -38,7 +38,7 @@ classDecl_list -> classDecl classDecl_list | EPSILON
 funcDef_list -> funcDef funcDef_list | EPSILON
 statement_list -> statement statement_list | EPSILON
 arraySize_list -> arraySize arraySize_list | EPSILON
-indice_list -> indice sem_FinishVariable indice_list | EPSILON
+indice_list -> indice indice_list | EPSILON
 fParamsTail_list -> fParamsTail fParamsTail_list | EPSILON
 aParamsTail_list -> aParamsTail aParamsTail_list | EPSILON
 assignOp -> ASSIGNMENT

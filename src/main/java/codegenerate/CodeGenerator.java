@@ -1,8 +1,7 @@
 package codegenerate;
 
 import codegenerate.instruction.*;
-import common.Const;
-import semantic.Statement.Statement;
+import semantic.statement.Statement;
 import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.FunctionAbstractEntry;

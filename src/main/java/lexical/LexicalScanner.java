@@ -299,13 +299,13 @@ public class LexicalScanner {
         }
     }
 
-    public static ArrayList<String> getKeyWordsList(String[] keywords) {
+    private static ArrayList<String> getKeyWordsList(String[] keywords) {
         ArrayList<String> list = new ArrayList<String>();
         Collections.addAll(list, keywords);
         return list;
     }
 
-    public static boolean isKeyWord(String word, ArrayList<String> kw) {
+    private static boolean isKeyWord(String word, ArrayList<String> kw) {
         for (String str : kw) {
             if (str.equals(word)) return true;
         }

@@ -1,6 +1,4 @@
-package codegenerate;
-
-import codegenerate.instruction.Instruction;
+package codegenerate.instruction;
 
 /**
  * Created by ERIC_LAI on 2017-04-03.

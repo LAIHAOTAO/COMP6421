@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class DuplicateDeclHandler {
 
-    public static String getNewName (SymbolTable table, String name) {
+    public static String getNewName(SymbolTable table, String name) {
         Set<String> tableKeySet = table.keySet();
         String curNm = getLongestName(getRelativeNameList(tableKeySet, name));
         return curNm + "#";
@@ -30,9 +30,9 @@ public class DuplicateDeclHandler {
 
     private static List<String> getRelativeNameList(Set<String> keySet, String name) {
         List<String> res = new ArrayList<>();
-        for (String keyNmae : keySet) {
-            if (match(keyNmae, name)) {
-                res.add(keyNmae);
+        for (String keyName : keySet) {
+            if (match(keyName, name)) {
+                res.add(keyName);
             }
         }
         return res;
