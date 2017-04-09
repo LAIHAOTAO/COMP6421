@@ -1,0 +1,15 @@
+class MyClass {
+    int x;
+
+    int add(){
+        x = x + 1;
+        return (x);
+    };
+};
+
+program {
+    int result;
+    MyClass c;
+    c.x = 1;
+    result = c.add();
+};

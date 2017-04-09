@@ -5,6 +5,7 @@ import codegenerate.Register;
 import common.Const;
 import exception.CompilerException;
 import semantic.handler.ActionHandler;
+import semantic.handler.SemanticActionHandler;
 import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.ParameterEntry;
@@ -46,11 +47,18 @@ public class VariableElementFragment extends TypedExpressionElement {
         // get the entry with that id as name
         final SymbolTableEntry e = getEntry(id);
 
-        if (!curScope.getParent().getName().equals("global table")) {
+        if (!curScope.getParentName().equals("global table")) {
             // means we are in a member function
             SymbolTable outerClass = curScope.getParent();
             if (outerClass.exist(id) && !curScope.exist(id)) {
-                // todo: member function call
+                // member function call
+                SymbolTable global = SymbolTableActionHandler.getSymbolTableByName("global");
+                // get outer class entry
+                SymbolTableEntry entry = global.search(outerClass.getName());
+                init(entry);
+                pushID(id);
+            } else {
+                init(e);
             }
 
         } else {
