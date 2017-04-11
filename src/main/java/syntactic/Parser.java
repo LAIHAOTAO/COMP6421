@@ -21,7 +21,7 @@ public class Parser {
     private static boolean DEBUG = false;
     private static Token inputToken;
     private static Token prevToken;
-    private static boolean isSuccess = true;
+    public static boolean isSuccess = true;
 
     public static final int FIRST_PARSE = 1;
     public static final int SECOND_PARSE = 2;

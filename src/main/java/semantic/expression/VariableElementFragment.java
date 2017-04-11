@@ -3,17 +3,18 @@ package semantic.expression;
 import codegenerate.MathOpt;
 import codegenerate.Register;
 import common.Const;
+import common.SpecialValues;
 import exception.CompilerException;
 import semantic.handler.ActionHandler;
-import semantic.handler.SemanticActionHandler;
-import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
+import semantic.symboltable.entry.MemberFunctionEntry;
 import semantic.symboltable.entry.ParameterEntry;
 import semantic.symboltable.entry.SymbolTableEntry;
 import semantic.symboltable.entry.VariableEntry;
 import semantic.symboltable.type.*;
 import semantic.value.*;
-import sun.tools.java.CompilerError;
+
+import java.util.List;
 
 /**
  * Created by ERIC_LAI on 2017-03-25.
@@ -32,6 +33,7 @@ public class VariableElementFragment extends TypedExpressionElement {
 
     private Value baseAddr;
     private Value offset;
+    private FunctionCallValue memberFunctionCallValue;
 
     public VariableElementFragment(String id) {
         this(id, ActionHandler.getCurrentSymbolTable());
@@ -52,10 +54,7 @@ public class VariableElementFragment extends TypedExpressionElement {
             SymbolTable outerClass = curScope.getParent();
             if (outerClass.exist(id) && !curScope.exist(id)) {
                 // member function call
-                SymbolTable global = SymbolTableActionHandler.getSymbolTableByName("global");
-                // get outer class entry
-                SymbolTableEntry entry = global.search(outerClass.getName());
-                init(entry);
+                init(getEntry(SpecialValues.THIS_POINTER_NAME));
                 pushID(id);
             } else {
                 init(e);
@@ -106,11 +105,39 @@ public class VariableElementFragment extends TypedExpressionElement {
                 context.push(child);
                 child.accept(expr);
             } else {
-                throw new CompilerError("Cannot index non-array type " + currentType);
+                throw new CompilerException("Cannot index non-array type " + currentType);
             }
 
-        } else if (expr instanceof FunctionCallExpressFragment) {
-            // todo: member function call
+        } else if (expr instanceof FunctionCallExpressionFragment) {
+            FunctionCallExpressionFragment f = (FunctionCallExpressionFragment) expr;
+            // then this is a member function call
+            if (currentType instanceof ClassType) {
+                ClassType currentClass = (ClassType) currentType;
+
+                // We don't want to do a recursive search for it, but rather check that it exists in the current scope
+                if (currentScope.exist(f.getId())) {
+                    SymbolTableEntry entry = currentScope.search(f.getId());
+                    if (entry instanceof MemberFunctionEntry) {
+                        MemberFunctionEntry function = (MemberFunctionEntry) entry;
+
+                        List<TypedExpressionElement> expressions = f.getExpressions();
+
+                        expressions.add(0, this);
+
+                        memberFunctionCallValue = new FunctionCallValue(function, expressions);
+
+                        functionCall = true;
+                        currentType = function.getType();
+                        context.finish();
+                    } else {
+                        throw new CompilerException("Cannot call non-function member " + f.getId() + " of class " + currentClass);
+                    }
+                } else {
+                    throw new CompilerException("Cannot find method " + f.getId() + " of class " + currentClass);
+                }
+            } else {
+                throw new CompilerException("Cannot call method " + f.getId() + " of non-class type " + currentType);
+            }
 
         } else if (expr instanceof IndexingExpressionFragment) {
 
@@ -183,9 +210,6 @@ public class VariableElementFragment extends TypedExpressionElement {
         currentScope = currentType.getScope();
     }
 
-    /**
-     * Get the entry with the specific id
-     */
     private SymbolTableEntry getEntry(String id) {
 
         if (currentScope == null) {
@@ -203,11 +227,8 @@ public class VariableElementFragment extends TypedExpressionElement {
             entry = currentScope.search(id);
         }
 
-        // otherwise this id maybe a free function name (if it is a member function name, the
-        // class name should
-        // be met first)
         if (entry == null) {
-            throw new CompilerException("Cannot find entry with " + id + " in current scope " +
+            throw new CompilerException("Undefined error. Cannot find entry: " + id + ", in current scope: " +
                     currentScope.getName());
         }
 

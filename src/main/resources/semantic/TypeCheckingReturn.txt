@@ -1,0 +1,12 @@
+program{
+    float x;
+    float y;
+    x = 1.2;
+    y = one() + x;
+};
+
+int one() {
+    int x;
+    x = 1;
+    return (x);
+};

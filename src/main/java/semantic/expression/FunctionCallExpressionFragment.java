@@ -18,13 +18,13 @@ import java.util.List;
 /**
  * Created by ERIC_LAI on 2017-03-27.
  */
-public class FunctionCallExpressFragment extends TypedExpressionElement {
+public class FunctionCallExpressionFragment extends TypedExpressionElement {
 
     private String id;
     private List<TypedExpressionElement> expressions;
     private SymbolTable currentScope;
 
-    public FunctionCallExpressFragment(String id, SymbolTable s) {
+    public FunctionCallExpressionFragment(String id, SymbolTable s) {
         this.id = id;
         this.currentScope = s;
         this.expressions = new ArrayList<>();
@@ -75,5 +75,13 @@ public class FunctionCallExpressFragment extends TypedExpressionElement {
                 }
             }
         };
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<TypedExpressionElement> getExpressions() {
+        return expressions;
     }
 }

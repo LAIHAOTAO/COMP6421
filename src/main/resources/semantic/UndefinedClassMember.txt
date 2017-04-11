@@ -1,0 +1,10 @@
+class MyClass{
+    int x;
+    int y;
+};
+
+program{
+    int x;
+    MyClass c;
+    x = c.z;
+};

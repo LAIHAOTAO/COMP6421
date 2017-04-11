@@ -2,6 +2,7 @@ package semantic.handler;
 
 
 import common.Const;
+import common.SpecialValues;
 import exception.CompilerException;
 import lexical.Token;
 import lexical.TokenType;
@@ -69,9 +70,10 @@ public class SymbolTableActionHandler extends ActionHandler {
                         throw new CompilerException("missing parentheses");
                     }
                     break;
-//                default:
-//                    throw new CompilerException("No such symbol table action");
+                default:
+                    break;
             }
+
         } else {
             // if in the second parse, need to maintain
             // the symContext for SemanticActionHandler
@@ -88,7 +90,8 @@ public class SymbolTableActionHandler extends ActionHandler {
                 case "sym_CreateFunction":
                     symContext.push(getSymbolTableByName(cacheFunction));
                     ExpressionContext.setCurrentFunction(
-                            (FunctionAbstractEntry) getSymbolTableByName(cacheFunction).getParent().search(cacheFunction)
+                            (FunctionAbstractEntry) getSymbolTableByName(cacheFunction).getParent
+                                    ().search(cacheFunction)
                     );
                     break;
                 case "sym_EndScope":
@@ -107,8 +110,8 @@ public class SymbolTableActionHandler extends ActionHandler {
                 case "sym_StoreId":
                 case "sym_StoreDimension":
                     break;
-//                default:
-//                    throw new CompilerException("Unknown error happen during second parse");
+                default:
+                    break;
             }
         }
     }
@@ -122,7 +125,7 @@ public class SymbolTableActionHandler extends ActionHandler {
                 }
             }
         }
-        throw new CompilerException("The " + name + "table do not exit !!!");
+        throw new CompilerException("The " + name + " table do not exit !!!");
     }
 
     private static void startMemberFunction(SymbolTable currentTable) {
@@ -133,7 +136,8 @@ public class SymbolTableActionHandler extends ActionHandler {
         // Note: when into this method, the current table is that function table
 
         // get that function entry from the current table
-        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
+        FunctionAbstractEntry functionEntry
+                = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
 
         // add parameters to the function table
         List<SymbolTableEntryType> paramTypeList = functionEntry.getParamTypeList();
@@ -156,19 +160,39 @@ public class SymbolTableActionHandler extends ActionHandler {
         //          2. for store previous frame pointer
         // *****************************************************************************
 
-        VariableEntry returnAddr = new VariableEntry(Const.FUNC_RETURN_ADDR, new IntType(), currentTable);
-        VariableEntry prevFp = new VariableEntry(Const.PREV_FRAME_POINTER, new IntType(), currentTable);
+        VariableEntry returnAddr = new VariableEntry(Const.FUNC_RETURN_ADDR, new IntType(),
+                currentTable);
+        VariableEntry prevFp = new VariableEntry(Const.PREV_FRAME_POINTER, new IntType(),
+                currentTable);
 
         currentTable.insert(returnAddr.getName(), returnAddr);
         currentTable.insert(prevFp.getName(), prevFp);
 
         // *****************************************************************************
+        // if the function is member function, add a this pointer point to the class, we
+        // need to keep the order, since the method of calculate the above parameter is
+        // determined
+        // *****************************************************************************
+        if (functionEntry instanceof MemberFunctionEntry) {
+
+            SymbolTable outerClass = currentTable.getParent();
+            SymbolTable global = outerClass.getParent();
+            String[] outClassEntryName = outerClass.getName().split(" ");
+            SymbolTableEntry outClassEntry = global.search(outClassEntryName[0]);
+
+            ParameterEntry thisParam
+                    = new ParameterEntry(SpecialValues.THIS_POINTER_NAME, outClassEntry.getType());
+            currentTable.insert(SpecialValues.THIS_POINTER_NAME, thisParam);
+        }
+        // *****************************************************************************
+
 
     }
 
     private static void addFunctionParameter(SymbolTable currentTable) {
         // get the function entry
-        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent().search(cacheFunction);
+        FunctionAbstractEntry functionEntry = (FunctionAbstractEntry) currentTable.getParent()
+                .search(cacheFunction);
         // get the temporary type of the parameter
         SymbolTableEntryType type = getType(cacheTypeToken);
         ArrayType type1;
@@ -210,8 +234,7 @@ public class SymbolTableActionHandler extends ActionHandler {
         SymbolTableEntry entry;
         if (freeFunction) {
             entry = new FunctionEntry(name, getType(cacheTypeToken), functionTable);
-        }
-        else {
+        } else {
             entry = new MemberFunctionEntry(name, getType(cacheTypeToken), functionTable);
         }
 
@@ -237,6 +260,13 @@ public class SymbolTableActionHandler extends ActionHandler {
         }
 
         SymbolTableEntryType type = getType(cacheTypeToken);
+        // if type is class, need to check whether the class is defined or not
+        if (type instanceof ClassType) {
+            if (((ClassType) type).getEntry() == null) {
+                throw new CompilerException("Attempt to access undefined class at line: "
+                        + cacheIdToken.getLocation());
+            }
+        }
         SymbolTableEntry entry = new VariableEntry(name, type, null);
         entry.setType(type);
 
@@ -254,11 +284,19 @@ public class SymbolTableActionHandler extends ActionHandler {
         // if the type is class type, search the class from global table (class declaration
         // must be in the global table) and pass the specific class entry reference to its type
         if (type instanceof ClassType ||
-                (type instanceof ArrayType && ((ArrayType) type).getArrayTypeType() instanceof ClassType)) {
-            @SuppressWarnings("ConstantConditions")
-            ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(((ClassType) type).getName());
+                (type instanceof ArrayType && ((ArrayType) type).getArrayTypeType() instanceof
+                        ClassType)) {
+            ClassEntry classEntry = null;
+            if (type instanceof ClassType) {
+                classEntry = (ClassEntry) getSymbolTableByName("global").search((
+                        (ClassType) type).getName());
+            } else if (((ArrayType) type).getArrayTypeType() instanceof ClassType) {
+                String name1 = ((ClassType) ((ArrayType) type).getArrayTypeType()).getName();
+                classEntry = (ClassEntry) getSymbolTableByName("global").search(name1);
+            }
             if (classEntry == null) {
-                throw new CompilerException("Attempt the use an undefined class at line: " + cacheIdToken.getLocation());
+                throw new CompilerException("Attempt the use an undefined class at line: " +
+                        cacheIdToken.getLocation());
             } else {
                 ((ClassType) classEntry.getType()).setEntry(classEntry);
             }
@@ -318,7 +356,8 @@ public class SymbolTableActionHandler extends ActionHandler {
             case FLOAT:
                 return new FloatType();
             case ID:
-                ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search(cacheType.getValue());
+                ClassEntry classEntry = (ClassEntry) getSymbolTableByName("global").search
+                        (cacheType.getValue());
                 return new ClassType(classEntry);
         }
         throw new CompilerException("No such type defined in the grammar");

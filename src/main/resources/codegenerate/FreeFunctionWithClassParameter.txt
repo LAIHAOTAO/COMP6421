@@ -7,11 +7,12 @@ program {
     MyClass c;
     int sum;
     sum = f1(c);
+    put (sum);
 };
 
 int f1(MyClass p) {
     int sum;
-    p.x = 1;
+    p.x = 65;
     p.y = 2;
     sum = p.x + p.y;
     return (sum);

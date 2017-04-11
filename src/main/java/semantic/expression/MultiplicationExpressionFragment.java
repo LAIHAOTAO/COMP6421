@@ -62,7 +62,7 @@ public class MultiplicationExpressionFragment extends AbstractRelationAndMathExp
         if (expr instanceof MultiplicationExpressionFragment ||
                 expr instanceof VariableElementFragment ||
                 expr instanceof AdditionExpressionFragment ||
-                expr instanceof FunctionCallExpressFragment) {
+                expr instanceof FunctionCallExpressionFragment) {
 
             switch (this.state) {
                 case WAIT_FIRST:

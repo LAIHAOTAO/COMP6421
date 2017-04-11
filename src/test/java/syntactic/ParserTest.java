@@ -102,7 +102,7 @@ public class ParserTest {
 
         String startSymbol = "prog";
 
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar1.txt");
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),
@@ -138,7 +138,7 @@ public class ParserTest {
 
         String startSymbol = "prog";
 
-        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar1.txt");
+        GrammarFileReader reader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
         ParserGenerator generator = new ParserGenerator(
                 reader.getTerminalRuleSymbols(),
                 reader.getNonTerminalRuleSymbols(),
@@ -158,9 +158,9 @@ public class ParserTest {
 
         LexicalScanner scanner = new LexicalScanner(Const.DIR_RES +
                 "syntactic/testprogram/program" + i + ".txt");
+        Parser.firstParse(scanner, generator.getParseTable());
+
         System.out.println("===============" + "parsing program" + i + "==================");
-        boolean isSuccess = Parser.firstParse(scanner, generator.getParseTable());
-        System.out.println("parsing result: " + ((isSuccess)? "success" : "fail"));
         System.out.println("parsing result file has been created");
     }
 

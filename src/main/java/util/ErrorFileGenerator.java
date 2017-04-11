@@ -19,7 +19,7 @@ public class ErrorFileGenerator {
         File file = new File(path);
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         if (errMsg.isEmpty()) {
-            bw.write(level + "analysis successfully");
+            bw.write(level + " analysis successfully");
         } else {
             bw.write(errMsg);
         }

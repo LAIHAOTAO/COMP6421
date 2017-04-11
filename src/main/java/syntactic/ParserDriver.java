@@ -17,14 +17,16 @@ public class ParserDriver {
 
         String startSymbol = "prog";
 
+        // *************************************************************************
         // pure grammar
-        GrammarFileReader pureGrammarReader = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
+        // *************************************************************************
+        GrammarFileReader pureGrammarReader
+                = new GrammarFileReader(Const.DIR_CONFIG + "/OriginalGrammar.txt");
         ParserGenerator pureGenerator = new ParserGenerator(
                 pureGrammarReader.getTerminalRuleSymbols(),
                 pureGrammarReader.getNonTerminalRuleSymbols(),
                 startSymbol
         );
-
         HashMap<String, String> pureMap = pureGrammarReader.getMap();
 
         for (String key : pureMap.keySet()) {
@@ -34,13 +36,13 @@ public class ParserDriver {
                 pureGenerator.addGrammarRule(key, grammarRuleStrs);
             }
         }
-
         pureGenerator.processPureGrammar();
-//        pureGenerator.getParseTable().printTable();
-//        System.out.println("===================");
 
+        // *************************************************************************
         // action grammar
-        GrammarFileReader ar = new GrammarFileReader(Const.DIR_CONFIG + "/ActionGrammar.txt");
+        // *************************************************************************
+        GrammarFileReader ar
+                = new GrammarFileReader(Const.DIR_CONFIG + "/ActionGrammar.txt");
         ParserGenerator pg = new ParserGenerator(
                 ar.getTerminalRuleSymbols(),
                 ar.getNonTerminalRuleSymbols(),
@@ -48,6 +50,7 @@ public class ParserDriver {
                 startSymbol
         );
         HashMap<String, String> map = ar.getMap();
+
         for (String key : map.keySet()) {
             String[] productionRuleStrs = map.get(key).split("\\|");
             for (String productionRuleStr : productionRuleStrs) {
@@ -55,16 +58,10 @@ public class ParserDriver {
                 pg.addGrammarRule(key, grammarRuleStrs);
             }
         }
+        // *************************************************************************
 
-
-
-        // update the grammar
         ActionGrammarInjector.addSemanticActionInGrammar(pureGenerator, pg.getNonTerminalMap());
-        // end of update grammar
-
         this.table = pureGenerator.getParseTable();
-
-//        this.table.printTable();
     }
 
     public ParserTable getTable() {

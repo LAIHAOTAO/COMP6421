@@ -55,7 +55,7 @@ public class IndexingExpressionFragment extends ExpressionElement {
                     currentDimension++;
                 }
             } else {
-                throw new CompilerException("array out of bound, please check carefully");
+                throw new CompilerException("Array out of bound, please check carefully");
             }
         } else {
             super.accept(expr);

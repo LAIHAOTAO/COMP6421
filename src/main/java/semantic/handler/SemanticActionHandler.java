@@ -19,17 +19,23 @@ public class SemanticActionHandler extends ActionHandler {
     private static boolean skipFinishVariable = false;
     private static boolean skipFunctionCall = false;
 
+    // there is a bug maybe inside the grammar, sometime may has two finish
+    // variable action
+    private static String prevAction = "";
+
     public static void process(String action, Token token) {
 
         ExpressionElement top;
 
         switch (action) {
             case "sem_FinishVariable":
-                if (!skipFinishVariable) {
-                    debugInfo(action, token);
-                    exprContext.finish();
-                } else {
-                    skipFinishVariable = false;
+                if (!action.equals(prevAction)) {
+                    if (!skipFinishVariable) {
+                        debugInfo(action, token);
+                        exprContext.finish();
+                    } else {
+                        skipFinishVariable = false;
+                    }
                 }
                 break;
 
@@ -101,7 +107,6 @@ public class SemanticActionHandler extends ActionHandler {
             // ************************************************************************************
             case "sem_PushVariableName":
                 String id = token.getValue();
-
                 if (!isFunctionCall(id)) {
                     debugInfo(action, token);
                     exprContext.getCurrent().pushID(token.getValue());
@@ -109,7 +114,7 @@ public class SemanticActionHandler extends ActionHandler {
                     // if that variable is a function name, actually it is a
                     // function call happen
                     debugInfo("sem_StartFunctionCall", token);
-                    exprContext.push(new FunctionCallExpressFragment(id, symContext.peek()));
+                    exprContext.push(new FunctionCallExpressionFragment(id, symContext.peek()));
                     skipFinishVariable = true;
                     skipFunctionCall = true;
                 }
@@ -121,6 +126,9 @@ public class SemanticActionHandler extends ActionHandler {
                 break;
             case "sem_PushFloatLiteral":
                 // todo floating point number stuff ...
+                debugInfo(action, token);
+                String value = token.getValue();
+                exprContext.getCurrent().pushFloat(Float.valueOf(value));
                 break;
 
             // ************************************************************************************
@@ -171,7 +179,7 @@ public class SemanticActionHandler extends ActionHandler {
                 else {
                     debugInfo(action, token);
                     exprContext.push(
-                            new FunctionCallExpressFragment(token.getValue(), symContext.peek())
+                            new FunctionCallExpressionFragment(token.getValue(), symContext.peek())
                     );
                 }
                 break;
@@ -196,6 +204,7 @@ public class SemanticActionHandler extends ActionHandler {
             default:
                 break;
         }
+        prevAction = action;
     }
 
     private static void debugInfo(String action, Token token) {

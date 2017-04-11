@@ -1,11 +1,16 @@
 package codegenerate;
 
 import codegenerate.instruction.*;
+import common.Const;
 import semantic.statement.Statement;
 import semantic.handler.SymbolTableActionHandler;
 import semantic.symboltable.SymbolTable;
 import semantic.symboltable.entry.FunctionAbstractEntry;
 import semantic.symboltable.entry.SymbolTableEntry;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Created by ERIC_LAI on 2017-03-31.
@@ -13,8 +18,16 @@ import semantic.symboltable.entry.SymbolTableEntry;
 public class CodeGenerator {
 
     private boolean debug = false;
+    private BufferedWriter writer;
 
-    public CodeGenerator() {
+    public CodeGenerator(String fileNm) {
+        String path = Const.DIR_OUTPUT + "code" + fileNm + ".m";
+
+        try {
+            this.writer = new BufferedWriter(new FileWriter(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void generate() {
@@ -26,6 +39,11 @@ public class CodeGenerator {
         }
         generateFunctions();
         generateProgram();
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void generateFunctions() {
@@ -78,7 +96,12 @@ public class CodeGenerator {
 
         // output all instructions
         for (Instruction instruction : context.instructions) {
-            // todo output the code to file
+            try {
+                writer.write(instruction.toString());
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             if (debug) System.out.println(instruction);
         }
 
@@ -114,7 +137,12 @@ public class CodeGenerator {
 
         // output all instructions
         for (Instruction instruction : context.instructions) {
-            // todo output the code to file
+            try {
+                writer.write(instruction.toString());
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             if (debug) System.out.println(instruction);
         }
     }

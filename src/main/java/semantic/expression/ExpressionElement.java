@@ -24,7 +24,7 @@ public abstract class ExpressionElement {
     }
 
     public void pushFloat(float f) {
-
+        pushIntNum((int) f);
     }
 
     public void pushAdditionOp(String op) {

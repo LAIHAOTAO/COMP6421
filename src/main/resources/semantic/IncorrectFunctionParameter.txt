@@ -1,0 +1,9 @@
+program{
+    int x;
+    x = add(1);
+};
+int add(int p1, int p2){
+    int sum;
+    sum = p1 + p2;
+    return (sum);
+};

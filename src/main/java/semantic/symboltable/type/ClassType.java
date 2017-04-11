@@ -47,4 +47,8 @@ public class ClassType implements SymbolTableEntryType {
     public void setEntry(ClassEntry entry) {
         this.entry = entry;
     }
+
+    public ClassEntry getEntry() {
+        return entry;
+    }
 }
