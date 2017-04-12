@@ -1,0 +1,5 @@
+Duplicate variable declaration of variable name x around line: 3
+Duplicate class declaration of class name MyClass around line: 9
+Duplicate class declaration of class name MyClass around line: 13
+Duplicate function declaration of function name x around line: 37
+Duplicate variable declaration of variable name yy around line: 40

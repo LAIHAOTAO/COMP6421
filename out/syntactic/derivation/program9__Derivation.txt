@@ -1,0 +1,19 @@
+========= Derivation begin =========
+=> classDecl_list progBody 
+=> classDecl classDecl_list progBody 
+=> CLASS ID LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class ID LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { type ID varDeclFunctDef_tail RBP SEMICOLON classDecl_list progBody 
+=> class id { ID ID varDeclFunctDef_tail RBP SEMICOLON classDecl_list progBody 
+=> class id { id ID varDeclFunctDef_tail RBP SEMICOLON classDecl_list progBody 
+=> class id { id id varDeclFunctDef_tail RBP SEMICOLON classDecl_list progBody 
+=> class id { id id arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id arraySize arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id LSP INT_NUM RSP arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id [ INT_NUM RSP arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id [ INT_NUM RSP arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id [ INT_NUM RSP arraySize_list SEMICOLON varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { id id [ INT_NUM RSP arraySize_list SEMICOLON 
+========= derivation end =========

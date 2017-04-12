@@ -1,0 +1,3 @@
+<ID, foo, 3>
+<ID, bar, 4>
+<LEXICAL_ERR, unclosed multi-line comment, 5>

@@ -1,0 +1,23 @@
+========= Derivation begin =========
+=> classDecl_list progBody 
+=> classDecl classDecl_list progBody 
+=> CLASS ID LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class ID LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id LBP varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { varDeclFunctDef_list RBP SEMICOLON classDecl_list progBody 
+=> class id { EPSILON RBP SEMICOLON classDecl_list progBody 
+=> class id { RBP SEMICOLON classDecl_list progBody 
+=> class id { } SEMICOLON classDecl_list progBody 
+=> class id { } ; classDecl_list progBody 
+=> class id { } ; EPSILON progBody 
+=> class id { } ; progBody 
+=> class id { } ; PROGRAM funcBody SEMICOLON funcDef_list 
+=> class id { } ; program funcBody SEMICOLON funcDef_list 
+=> class id { } ; program LBP funcBody_ RBP SEMICOLON funcDef_list 
+=> class id { } ; program { funcBody_ RBP SEMICOLON funcDef_list 
+=> class id { } ; program { EPSILON RBP SEMICOLON funcDef_list 
+=> class id { } ; program { RBP SEMICOLON funcDef_list 
+=> class id { } ; program { } SEMICOLON funcDef_list 
+=> class id { } ; program { } ; funcDef_list 
+=> class id { } ; program { } ; 
+========= derivation end =========

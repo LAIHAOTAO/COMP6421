@@ -1,0 +1,48 @@
+Table Name: global table,  Parent Table Name: null
+--------------------------------------------------------------------------------------------------
+| name            | kind            | type                           | offset     | link       |
+--------------------------------------------------------------------------------------------------
+| MyClass         | Class           | MyClass                        | 0          | MyClass table |
+| ff              | Function        | Int                            | 0          | ff table   |
+| program         | Function        | Null                           | 0          | program table |
+--------------------------------------------------------------------------------------------------
+
+Table Name: addNum table,  Parent Table Name: MyClass table
+--------------------------------------------------------------------------------------------------
+| name            | kind            | type                           | offset     | link       |
+--------------------------------------------------------------------------------------------------
+| @this           | Parameter       | MyClass                        | 8          | MyClass    |
+| @returnAddr     | Variable        | Int                            | 0          | addNum table |
+| x               | Variable        | Int                            | 12         | null       |
+| @prevFp         | Variable        | Int                            | 4          | addNum table |
+--------------------------------------------------------------------------------------------------
+
+Table Name: MyClass table,  Parent Table Name: global table
+--------------------------------------------------------------------------------------------------
+| name            | kind            | type                           | offset     | link       |
+--------------------------------------------------------------------------------------------------
+| addNum          | Function        | Int                            | 96         | addNum table |
+| x               | Variable        | Int[3][8]                      | 0          | null       |
+--------------------------------------------------------------------------------------------------
+
+Table Name: program table,  Parent Table Name: global table
+--------------------------------------------------------------------------------------------------
+| name            | kind            | type                           | offset     | link       |
+--------------------------------------------------------------------------------------------------
+| myClass1        | Variable        | MyClass                        | 1928       | MyClass    |
+| x               | Variable        | Int                            | 0          | null       |
+| myClass         | Variable        | MyClass[4][5]                  | 8          | null       |
+| y               | Variable        | Int                            | 4          | null       |
+--------------------------------------------------------------------------------------------------
+
+Table Name: ff table,  Parent Table Name: global table
+--------------------------------------------------------------------------------------------------
+| name            | kind            | type                           | offset     | link       |
+--------------------------------------------------------------------------------------------------
+| xx              | Variable        | Int                            | 16         | null       |
+| @returnAddr     | Variable        | Int                            | 8          | ff table   |
+| x               | Parameter       | Int                            | 0          | null       |
+| y               | Parameter       | Int[2][2]                      | 4          | null       |
+| @prevFp         | Variable        | Int                            | 12         | ff table   |
+--------------------------------------------------------------------------------------------------
+

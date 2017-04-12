@@ -1,0 +1,12 @@
+<INT_NUM, 3, 1>
+<ID, foo, 1>
+<ID, b1a2r, 1>
+<ID, foo, 2>
+<LEXICAL_ERR, Unknown lexeme &, 2>
+<ID, bar, 2>
+<ID, if_, 3>
+<INT_NUM, 3, 3>
+<IF, if, 3>
+<LEXICAL_ERR, Unknown lexeme _, 4>
+<ID, abc, 4>
+<ID, abc__, 5>

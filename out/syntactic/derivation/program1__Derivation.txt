@@ -1,0 +1,14 @@
+========= Derivation begin =========
+=> classDecl_list progBody 
+=> EPSILON progBody 
+=> progBody 
+=> PROGRAM funcBody SEMICOLON funcDef_list 
+=> program funcBody SEMICOLON funcDef_list 
+=> program LBP funcBody_ RBP SEMICOLON funcDef_list 
+=> program { funcBody_ RBP SEMICOLON funcDef_list 
+=> program { EPSILON RBP SEMICOLON funcDef_list 
+=> program { RBP SEMICOLON funcDef_list 
+=> program { } SEMICOLON funcDef_list 
+=> program { } ; funcDef_list 
+=> program { } ; 
+========= derivation end =========

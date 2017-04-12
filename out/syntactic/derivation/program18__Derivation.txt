@@ -1,0 +1,26 @@
+========= Derivation begin =========
+=> classDecl_list progBody 
+=> EPSILON progBody 
+=> progBody 
+=> PROGRAM funcBody SEMICOLON funcDef_list 
+=> program funcBody SEMICOLON funcDef_list 
+=> program LBP funcBody_ RBP SEMICOLON funcDef_list 
+=> program { funcBody_ RBP SEMICOLON funcDef_list 
+=> program { restOfStatment statement_list RBP SEMICOLON funcDef_list 
+=> program { GET LCP variable_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get LCP variable_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( variable_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( ID indice_list idnest_list_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id indice_list idnest_list_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id EPSILON idnest_list_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id idnest_list_ RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id EPSILON RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id RCP SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id ) SEMICOLON statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id ) ; statement_list RBP SEMICOLON funcDef_list 
+=> program { get ( id ) ; EPSILON RBP SEMICOLON funcDef_list 
+=> program { get ( id ) ; RBP SEMICOLON funcDef_list 
+=> program { get ( id ) ; } SEMICOLON funcDef_list 
+=> program { get ( id ) ; } ; funcDef_list 
+=> program { get ( id ) ; } ; 
+========= derivation end =========

@@ -1,0 +1,2 @@
+syntax error at line: 3, around token: id
+syntax error at line: 5, around token: }
