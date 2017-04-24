@@ -88,7 +88,7 @@ public class StatementTest {
 
             parserDriver = new ParserDriver();
             Parser.turnOnDebug();
-            SemanticActionHandler.turnOnDebug();
+//            SemanticActionHandler.turnOnDebug();
 
             Parser.firstParse(scanner, parserDriver.getTable());
             boolean isSuccess = Parser.secondParse(scanner, parserDriver.getTable());

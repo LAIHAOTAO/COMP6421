@@ -4,16 +4,16 @@ class MyClass{
 };
 
 program {
-    MyClass c;
+    int c[3];
     int sum;
     sum = f1(c);
     put (sum);
 };
 
-int f1(MyClass p) {
+int f1(int p[3]) {
     int sum;
-    p.x = 65;
-    p.y = 2;
-    sum = p.x + p.y;
+    p[0] = 65;
+    p[1] = 2;
+    sum = p[0] + p[1];
     return (sum);
 };

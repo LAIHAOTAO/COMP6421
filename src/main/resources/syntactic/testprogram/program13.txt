@@ -1,5 +1,5 @@
 class id {
-    id id [ intValue ][ intValue ] ;
+    id id [ 3 ][ 2 ] ;
     id id (id id , id id ){
         id id ;
     };
@@ -8,6 +8,6 @@ class id {
 program {
     id id ;
     id = id ;
-    id . id [ id ] [ id ] = id . id + id * id > id . id ;
+    id . id [ id ] [ id ] = id . id + id * id > id;
 } ;
 id id ( id id [ intValue ] [ intValue ] , id  id ) { } ;

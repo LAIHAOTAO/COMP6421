@@ -3,8 +3,13 @@ class MyClass{
     int y;
 };
 
+class MyClass1{
+    int x;
+    MyClass y;
+};
+
 program{
     int x;
-    MyClass c;
-    x = c.z;
+    MyClass1 c;
+    x = c.y.b;
 };

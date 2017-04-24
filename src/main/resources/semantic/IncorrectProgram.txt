@@ -1,11 +1,13 @@
 class MyClass {
-    int x[3];
+    int x;
+    int x;
+    MyClass1 c;
     int addNum() {
         int x;
     };
 };
 
-class MyClass {
+class MyClass1 {
     MyClass myClass1[6];
 };
 

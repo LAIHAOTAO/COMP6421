@@ -1,6 +1,11 @@
+class M {
+    int x;
+    int y;
+};
+
 program {
-    int x[3][3];
-    x[2][1] = 65;
-    x[1][2] = 66;
-    put (x[1][2]);
+    M m[3];
+    m[1].x = 64;
+    m[1].y = 1;
+    put (m[1].x + m[1].y);
 };
